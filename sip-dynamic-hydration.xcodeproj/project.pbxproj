@@ -6,14 +6,91 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		4C280E7A2FA0449100B28D48 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C280E792FA0448F00B28D48 /* WidgetKit.framework */; };
+		4C280E7C2FA0449100B28D48 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C280E7B2FA0449100B28D48 /* SwiftUI.framework */; };
+		4C280E892FA0449800B28D48 /* SipWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 4C280E772FA0448F00B28D48 /* SipWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		4C280E872FA0449800B28D48 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4C280E5C2FA043AC00B28D48 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4C280E762FA0448F00B28D48;
+			remoteInfo = SipWidgetExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		4C280E8E2FA0449900B28D48 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				4C280E892FA0449800B28D48 /* SipWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		4C280E642FA043AC00B28D48 /* sip-dynamic-hydration.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "sip-dynamic-hydration.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4C280E772FA0448F00B28D48 /* SipWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SipWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		4C280E792FA0448F00B28D48 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		4C280E7B2FA0449100B28D48 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		4C280E9C2FA046D500B28D48 /* SipWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SipWidgetExtension.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		4C280E8A2FA0449900B28D48 /* Exceptions for "SipWidget" folder in "SipWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 4C280E762FA0448F00B28D48 /* SipWidgetExtension */;
+		};
+		4C280E932FA044FD00B28D48 /* Exceptions for "Shared" folder in "sip-dynamic-hydration" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				SharedLogic.swift,
+			);
+			target = 4C280E632FA043AC00B28D48 /* sip-dynamic-hydration */;
+		};
+		4C280E9B2FA046CB00B28D48 /* Exceptions for "sip-dynamic-hydration" folder in "sip-dynamic-hydration" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 4C280E632FA043AC00B28D48 /* sip-dynamic-hydration */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		4C280E662FA043AC00B28D48 /* sip-dynamic-hydration */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				4C280E9B2FA046CB00B28D48 /* Exceptions for "sip-dynamic-hydration" folder in "sip-dynamic-hydration" target */,
+			);
 			path = "sip-dynamic-hydration";
+			sourceTree = "<group>";
+		};
+		4C280E7D2FA0449100B28D48 /* SipWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				4C280E8A2FA0449900B28D48 /* Exceptions for "SipWidget" folder in "SipWidgetExtension" target */,
+			);
+			path = SipWidget;
+			sourceTree = "<group>";
+		};
+		4C280E8F2FA044AE00B28D48 /* Shared */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				4C280E932FA044FD00B28D48 /* Exceptions for "Shared" folder in "sip-dynamic-hydration" target */,
+			);
+			path = Shared;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -26,13 +103,26 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		4C280E742FA0448F00B28D48 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4C280E7C2FA0449100B28D48 /* SwiftUI.framework in Frameworks */,
+				4C280E7A2FA0449100B28D48 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		4C280E5B2FA043AC00B28D48 = {
 			isa = PBXGroup;
 			children = (
+				4C280E9C2FA046D500B28D48 /* SipWidgetExtension.entitlements */,
+				4C280E8F2FA044AE00B28D48 /* Shared */,
 				4C280E662FA043AC00B28D48 /* sip-dynamic-hydration */,
+				4C280E7D2FA0449100B28D48 /* SipWidget */,
+				4C280E782FA0448F00B28D48 /* Frameworks */,
 				4C280E652FA043AC00B28D48 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -41,8 +131,18 @@
 			isa = PBXGroup;
 			children = (
 				4C280E642FA043AC00B28D48 /* sip-dynamic-hydration.app */,
+				4C280E772FA0448F00B28D48 /* SipWidgetExtension.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		4C280E782FA0448F00B28D48 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4C280E792FA0448F00B28D48 /* WidgetKit.framework */,
+				4C280E7B2FA0449100B28D48 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -55,10 +155,12 @@
 				4C280E602FA043AC00B28D48 /* Sources */,
 				4C280E612FA043AC00B28D48 /* Frameworks */,
 				4C280E622FA043AC00B28D48 /* Resources */,
+				4C280E8E2FA0449900B28D48 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				4C280E882FA0449800B28D48 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				4C280E662FA043AC00B28D48 /* sip-dynamic-hydration */,
@@ -69,6 +171,29 @@
 			productName = "sip-dynamic-hydration";
 			productReference = 4C280E642FA043AC00B28D48 /* sip-dynamic-hydration.app */;
 			productType = "com.apple.product-type.application";
+		};
+		4C280E762FA0448F00B28D48 /* SipWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4C280E8B2FA0449900B28D48 /* Build configuration list for PBXNativeTarget "SipWidgetExtension" */;
+			buildPhases = (
+				4C280E732FA0448F00B28D48 /* Sources */,
+				4C280E742FA0448F00B28D48 /* Frameworks */,
+				4C280E752FA0448F00B28D48 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				4C280E7D2FA0449100B28D48 /* SipWidget */,
+				4C280E8F2FA044AE00B28D48 /* Shared */,
+			);
+			name = SipWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = SipWidgetExtension;
+			productReference = 4C280E772FA0448F00B28D48 /* SipWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -81,6 +206,9 @@
 				LastUpgradeCheck = 2640;
 				TargetAttributes = {
 					4C280E632FA043AC00B28D48 = {
+						CreatedOnToolsVersion = 26.4.1;
+					};
+					4C280E762FA0448F00B28D48 = {
 						CreatedOnToolsVersion = 26.4.1;
 					};
 				};
@@ -100,12 +228,20 @@
 			projectRoot = "";
 			targets = (
 				4C280E632FA043AC00B28D48 /* sip-dynamic-hydration */,
+				4C280E762FA0448F00B28D48 /* SipWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		4C280E622FA043AC00B28D48 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4C280E752FA0448F00B28D48 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -122,7 +258,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		4C280E732FA0448F00B28D48 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		4C280E882FA0449800B28D48 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4C280E762FA0448F00B28D48 /* SipWidgetExtension */;
+			targetProxy = 4C280E872FA0449800B28D48 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		4C280E6D2FA043AF00B28D48 /* Debug */ = {
@@ -251,30 +402,40 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "sip-dynamic-hydration/sip-dynamic-hydration.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = L8A3PF8RFV;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "sip-dynamic-hydration/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Sip - Dynamic Hydration";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "eeded to read your water intake to keep your hydration bar synced.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Needed to save your logged water to Apple Health.";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 0.20260428;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.mjbapps.sip-dynamic-hydration";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -283,30 +444,116 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "sip-dynamic-hydration/sip-dynamic-hydration.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = L8A3PF8RFV;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "sip-dynamic-hydration/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Sip - Dynamic Hydration";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "eeded to read your water intake to keep your hydration bar synced.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Needed to save your logged water to Apple Health.";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 0.20260428;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.mjbapps.sip-dynamic-hydration";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		4C280E8C2FA0449900B28D48 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = SipWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = L8A3PF8RFV;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SipWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = SipWidget;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "We need to read your water intake from Apple Health so your Live Activity bar stays perfectly synced, even if you log water on your Apple Watch.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "We need permission to save the water you log in the app directly to your Apple Health database.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 0.20260428;
+				PRODUCT_BUNDLE_IDENTIFIER = "org.mjbapps.sip-dynamic-hydration.SipWidget";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		4C280E8D2FA0449900B28D48 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = SipWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = L8A3PF8RFV;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SipWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = SipWidget;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "We need to read your water intake from Apple Health so your Live Activity bar stays perfectly synced, even if you log water on your Apple Watch.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "We need permission to save the water you log in the app directly to your Apple Health database.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 0.20260428;
+				PRODUCT_BUNDLE_IDENTIFIER = "org.mjbapps.sip-dynamic-hydration.SipWidget";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -327,6 +574,15 @@
 			buildConfigurations = (
 				4C280E702FA043AF00B28D48 /* Debug */,
 				4C280E712FA043AF00B28D48 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4C280E8B2FA0449900B28D48 /* Build configuration list for PBXNativeTarget "SipWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4C280E8C2FA0449900B28D48 /* Debug */,
+				4C280E8D2FA0449900B28D48 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
