@@ -2,8 +2,6 @@
 //  sip_dynamic_hydrationApp.swift
 //  sip-dynamic-hydration
 //
-//  Created by Michael Brockman on 4/27/26.
-//
 
 import SwiftUI
 
@@ -16,11 +14,15 @@ struct sip_dynamic_hydrationApp: App {
         WindowGroup {
             ContentView()
                 .environmentObject(manager)
-                .onChange(of: scenePhase) { oldPhase, newPhase in
+                .onChange(of: scenePhase) { _, newPhase in
                     if newPhase == .active {
                         manager.checkMidnightReset()
                         manager.syncPendingAppGroupLogs()
                         manager.syncFromHealthKit()
+                        manager.refreshDailySummary()   // Reschedule with fresh context
+                        if manager.useAdaptiveGoals {
+                            Task { await manager.refreshAdaptiveGoal() }
+                        }
                     }
                 }
         }

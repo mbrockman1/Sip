@@ -8,7 +8,7 @@
 	<true/>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.org.mjbapps.sip-dynamic-hydration</string>
+		<string>group.org.mjbapps.sip</string>
 	</array>
 </dict>
 </plist>

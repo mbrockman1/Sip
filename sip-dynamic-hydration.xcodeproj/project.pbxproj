@@ -10,6 +10,10 @@
 		4C280E7A2FA0449100B28D48 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C280E792FA0448F00B28D48 /* WidgetKit.framework */; };
 		4C280E7C2FA0449100B28D48 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C280E7B2FA0449100B28D48 /* SwiftUI.framework */; };
 		4C280E892FA0449800B28D48 /* SipWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 4C280E772FA0448F00B28D48 /* SipWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		4CD220CF2FA11B2F00AB31DE /* SipWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 4CD220C52FA11B2C00AB31DE /* SipWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		4CD220FE2FA1304D00AB31DE /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C280E792FA0448F00B28D48 /* WidgetKit.framework */; };
+		4CD220FF2FA1304E00AB31DE /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C280E7B2FA0449100B28D48 /* SwiftUI.framework */; };
+		4CD2210A2FA1305000AB31DE /* SipWatchWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 4CD220FD2FA1304D00AB31DE /* SipWatchWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -19,6 +23,20 @@
 			proxyType = 1;
 			remoteGlobalIDString = 4C280E762FA0448F00B28D48;
 			remoteInfo = SipWidgetExtension;
+		};
+		4CD220CD2FA11B2F00AB31DE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4C280E5C2FA043AC00B28D48 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4CD220C42FA11B2C00AB31DE;
+			remoteInfo = "SipWatch Watch App";
+		};
+		4CD221082FA1305000AB31DE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4C280E5C2FA043AC00B28D48 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4CD220FC2FA1304D00AB31DE;
+			remoteInfo = SipWatchWidgetExtension;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -34,6 +52,28 @@
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		4CD220D32FA11B2F00AB31DE /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				4CD220CF2FA11B2F00AB31DE /* SipWatch Watch App.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4CD2210F2FA1305000AB31DE /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				4CD2210A2FA1305000AB31DE /* SipWatchWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -42,6 +82,10 @@
 		4C280E792FA0448F00B28D48 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		4C280E7B2FA0449100B28D48 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		4C280E9C2FA046D500B28D48 /* SipWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SipWidgetExtension.entitlements; sourceTree = "<group>"; };
+		4CD220C52FA11B2C00AB31DE /* SipWatch Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SipWatch Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4CD220FD2FA1304D00AB31DE /* SipWatchWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SipWatchWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		4CD221102FA130AD00AB31DE /* SipWatchWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SipWatchWidgetExtension.entitlements; sourceTree = "<group>"; };
+		4CD221132FA131FE00AB31DE /* ActivityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ActivityKit.framework; path = System/Library/Frameworks/ActivityKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -66,6 +110,58 @@
 			);
 			target = 4C280E632FA043AC00B28D48 /* sip-dynamic-hydration */;
 		};
+		4CD220D62FA11C5200AB31DE /* Exceptions for "Shared" folder in "SipWatch Watch App" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				SharedLogic.swift,
+			);
+			target = 4CD220C42FA11B2C00AB31DE /* SipWatch Watch App */;
+		};
+		4CD2210E2FA1305000AB31DE /* Exceptions for "SipWatchWidget" folder in "SipWatchWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 4CD220FC2FA1304D00AB31DE /* SipWatchWidgetExtension */;
+		};
+		4CD221122FA130C900AB31DE /* Exceptions for "Shared" folder in "SipWatchWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				SharedLogic.swift,
+			);
+			target = 4CD220FC2FA1304D00AB31DE /* SipWatchWidgetExtension */;
+		};
+		4CD2211E2FA1327200AB31DE /* Exceptions for "SipWatch Watch App" folder in "SipWatchWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Watch_Library/Watch_Library.swift,
+			);
+			target = 4CD220FC2FA1304D00AB31DE /* SipWatchWidgetExtension */;
+		};
+		4CD221262FA1346B00AB31DE /* Exceptions for "sip-dynamic-hydration" folder in "SipWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Assets.xcassets,
+				HydrationManager.swift,
+				iOS_Library/iOS_Library.swift,
+				Views/SettingsView.swift,
+			);
+			target = 4C280E762FA0448F00B28D48 /* SipWidgetExtension */;
+		};
+		4CD2216F2FA1559B00AB31DE /* Exceptions for "sip-dynamic-hydration" folder in "SipWatch Watch App" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Assets.xcassets,
+			);
+			target = 4CD220C42FA11B2C00AB31DE /* SipWatch Watch App */;
+		};
+		4CD221702FA1559B00AB31DE /* Exceptions for "sip-dynamic-hydration" folder in "SipWatchWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Assets.xcassets,
+			);
+			target = 4CD220FC2FA1304D00AB31DE /* SipWatchWidgetExtension */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -73,6 +169,9 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				4C280E9B2FA046CB00B28D48 /* Exceptions for "sip-dynamic-hydration" folder in "sip-dynamic-hydration" target */,
+				4CD221262FA1346B00AB31DE /* Exceptions for "sip-dynamic-hydration" folder in "SipWidgetExtension" target */,
+				4CD2216F2FA1559B00AB31DE /* Exceptions for "sip-dynamic-hydration" folder in "SipWatch Watch App" target */,
+				4CD221702FA1559B00AB31DE /* Exceptions for "sip-dynamic-hydration" folder in "SipWatchWidgetExtension" target */,
 			);
 			path = "sip-dynamic-hydration";
 			sourceTree = "<group>";
@@ -89,8 +188,26 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				4C280E932FA044FD00B28D48 /* Exceptions for "Shared" folder in "sip-dynamic-hydration" target */,
+				4CD220D62FA11C5200AB31DE /* Exceptions for "Shared" folder in "SipWatch Watch App" target */,
+				4CD221122FA130C900AB31DE /* Exceptions for "Shared" folder in "SipWatchWidgetExtension" target */,
 			);
 			path = Shared;
+			sourceTree = "<group>";
+		};
+		4CD220C62FA11B2C00AB31DE /* SipWatch Watch App */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				4CD2211E2FA1327200AB31DE /* Exceptions for "SipWatch Watch App" folder in "SipWatchWidgetExtension" target */,
+			);
+			path = "SipWatch Watch App";
+			sourceTree = "<group>";
+		};
+		4CD221002FA1304E00AB31DE /* SipWatchWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				4CD2210E2FA1305000AB31DE /* Exceptions for "SipWatchWidget" folder in "SipWatchWidgetExtension" target */,
+			);
+			path = SipWatchWidget;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -112,16 +229,35 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		4CD220C22FA11B2C00AB31DE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4CD220FA2FA1304D00AB31DE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4CD220FF2FA1304E00AB31DE /* SwiftUI.framework in Frameworks */,
+				4CD220FE2FA1304D00AB31DE /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		4C280E5B2FA043AC00B28D48 = {
 			isa = PBXGroup;
 			children = (
+				4CD221102FA130AD00AB31DE /* SipWatchWidgetExtension.entitlements */,
 				4C280E9C2FA046D500B28D48 /* SipWidgetExtension.entitlements */,
 				4C280E8F2FA044AE00B28D48 /* Shared */,
 				4C280E662FA043AC00B28D48 /* sip-dynamic-hydration */,
 				4C280E7D2FA0449100B28D48 /* SipWidget */,
+				4CD220C62FA11B2C00AB31DE /* SipWatch Watch App */,
+				4CD221002FA1304E00AB31DE /* SipWatchWidget */,
 				4C280E782FA0448F00B28D48 /* Frameworks */,
 				4C280E652FA043AC00B28D48 /* Products */,
 			);
@@ -132,6 +268,8 @@
 			children = (
 				4C280E642FA043AC00B28D48 /* sip-dynamic-hydration.app */,
 				4C280E772FA0448F00B28D48 /* SipWidgetExtension.appex */,
+				4CD220C52FA11B2C00AB31DE /* SipWatch Watch App.app */,
+				4CD220FD2FA1304D00AB31DE /* SipWatchWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -139,6 +277,7 @@
 		4C280E782FA0448F00B28D48 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4CD221132FA131FE00AB31DE /* ActivityKit.framework */,
 				4C280E792FA0448F00B28D48 /* WidgetKit.framework */,
 				4C280E7B2FA0449100B28D48 /* SwiftUI.framework */,
 			);
@@ -156,11 +295,13 @@
 				4C280E612FA043AC00B28D48 /* Frameworks */,
 				4C280E622FA043AC00B28D48 /* Resources */,
 				4C280E8E2FA0449900B28D48 /* Embed Foundation Extensions */,
+				4CD220D32FA11B2F00AB31DE /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				4C280E882FA0449800B28D48 /* PBXTargetDependency */,
+				4CD220CE2FA11B2F00AB31DE /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				4C280E662FA043AC00B28D48 /* sip-dynamic-hydration */,
@@ -195,6 +336,52 @@
 			productReference = 4C280E772FA0448F00B28D48 /* SipWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		4CD220C42FA11B2C00AB31DE /* SipWatch Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4CD220D02FA11B2F00AB31DE /* Build configuration list for PBXNativeTarget "SipWatch Watch App" */;
+			buildPhases = (
+				4CD220C12FA11B2C00AB31DE /* Sources */,
+				4CD220C22FA11B2C00AB31DE /* Frameworks */,
+				4CD220C32FA11B2C00AB31DE /* Resources */,
+				4CD2210F2FA1305000AB31DE /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				4CD221092FA1305000AB31DE /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				4CD220C62FA11B2C00AB31DE /* SipWatch Watch App */,
+			);
+			name = "SipWatch Watch App";
+			packageProductDependencies = (
+			);
+			productName = "SipWatch Watch App";
+			productReference = 4CD220C52FA11B2C00AB31DE /* SipWatch Watch App.app */;
+			productType = "com.apple.product-type.application";
+		};
+		4CD220FC2FA1304D00AB31DE /* SipWatchWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4CD2210B2FA1305000AB31DE /* Build configuration list for PBXNativeTarget "SipWatchWidgetExtension" */;
+			buildPhases = (
+				4CD220F92FA1304D00AB31DE /* Sources */,
+				4CD220FA2FA1304D00AB31DE /* Frameworks */,
+				4CD220FB2FA1304D00AB31DE /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				4CD221002FA1304E00AB31DE /* SipWatchWidget */,
+			);
+			name = SipWatchWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = SipWatchWidgetExtension;
+			productReference = 4CD220FD2FA1304D00AB31DE /* SipWatchWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -209,6 +396,12 @@
 						CreatedOnToolsVersion = 26.4.1;
 					};
 					4C280E762FA0448F00B28D48 = {
+						CreatedOnToolsVersion = 26.4.1;
+					};
+					4CD220C42FA11B2C00AB31DE = {
+						CreatedOnToolsVersion = 26.4.1;
+					};
+					4CD220FC2FA1304D00AB31DE = {
 						CreatedOnToolsVersion = 26.4.1;
 					};
 				};
@@ -229,6 +422,8 @@
 			targets = (
 				4C280E632FA043AC00B28D48 /* sip-dynamic-hydration */,
 				4C280E762FA0448F00B28D48 /* SipWidgetExtension */,
+				4CD220C42FA11B2C00AB31DE /* SipWatch Watch App */,
+				4CD220FC2FA1304D00AB31DE /* SipWatchWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -242,6 +437,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		4C280E752FA0448F00B28D48 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4CD220C32FA11B2C00AB31DE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4CD220FB2FA1304D00AB31DE /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -265,6 +474,20 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		4CD220C12FA11B2C00AB31DE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4CD220F92FA1304D00AB31DE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -272,6 +495,16 @@
 			isa = PBXTargetDependency;
 			target = 4C280E762FA0448F00B28D48 /* SipWidgetExtension */;
 			targetProxy = 4C280E872FA0449800B28D48 /* PBXContainerItemProxy */;
+		};
+		4CD220CE2FA11B2F00AB31DE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4CD220C42FA11B2C00AB31DE /* SipWatch Watch App */;
+			targetProxy = 4CD220CD2FA11B2F00AB31DE /* PBXContainerItemProxy */;
+		};
+		4CD221092FA1305000AB31DE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4CD220FC2FA1304D00AB31DE /* SipWatchWidgetExtension */;
+			targetProxy = 4CD221082FA1305000AB31DE /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -557,6 +790,142 @@
 			};
 			name = Release;
 		};
+		4CD220D12FA11B2F00AB31DE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "SipWatch Watch App/SipWatch Watch App.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = L8A3PF8RFV;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "SipWatch - Dynamic Hydration";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "org.mjbapps.sip-dynamic-hydration";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.20260428;
+				PRODUCT_BUNDLE_IDENTIFIER = "org.mjbapps.sip-dynamic-hydration.watchkitapp";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.4;
+			};
+			name = Debug;
+		};
+		4CD220D22FA11B2F00AB31DE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "SipWatch Watch App/SipWatch Watch App.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = L8A3PF8RFV;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "SipWatch - Dynamic Hydration";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "org.mjbapps.sip-dynamic-hydration";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.20260428;
+				PRODUCT_BUNDLE_IDENTIFIER = "org.mjbapps.sip-dynamic-hydration.watchkitapp";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.4;
+			};
+			name = Release;
+		};
+		4CD2210C2FA1305000AB31DE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = SipWatchWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = L8A3PF8RFV;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SipWatchWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = SipWatchWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MARKETING_VERSION = 0.20260428;
+				PRODUCT_BUNDLE_IDENTIFIER = "org.mjbapps.sip-dynamic-hydration.watchkitapp.SipWatchWidget";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.4;
+			};
+			name = Debug;
+		};
+		4CD2210D2FA1305000AB31DE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = SipWatchWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = L8A3PF8RFV;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SipWatchWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = SipWatchWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MARKETING_VERSION = 0.20260428;
+				PRODUCT_BUNDLE_IDENTIFIER = "org.mjbapps.sip-dynamic-hydration.watchkitapp.SipWatchWidget";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.4;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -583,6 +952,24 @@
 			buildConfigurations = (
 				4C280E8C2FA0449900B28D48 /* Debug */,
 				4C280E8D2FA0449900B28D48 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4CD220D02FA11B2F00AB31DE /* Build configuration list for PBXNativeTarget "SipWatch Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4CD220D12FA11B2F00AB31DE /* Debug */,
+				4CD220D22FA11B2F00AB31DE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4CD2210B2FA1305000AB31DE /* Build configuration list for PBXNativeTarget "SipWatchWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4CD2210C2FA1305000AB31DE /* Debug */,
+				4CD2210D2FA1305000AB31DE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
