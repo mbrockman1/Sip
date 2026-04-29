@@ -1,33 +1,24 @@
 //
-//  SipWatchApp 2.swift
-//  sip-dynamic-hydration
+//  SipWatchApp.swift
+//  SipWatch Watch App
 //
-//  Created by Michael Brockman on 4/28/26.
+//  Target: Watch App ONLY
 //
-
 
 import SwiftUI
 import WatchKit
 import WidgetKit
-import ClockKit
-
-// MARK: - Watch App Entry Point
 
 @main
 struct SipWatchApp: App {
-    @WKApplicationDelegateAdaptor(SipWatchDelegate.self) var delegate
+    // WatchSessionManager is the single source of truth on the watch
+    @StateObject private var session = WatchSessionManager.shared
 
     var body: some Scene {
         WindowGroup {
             WatchContentView()
+                .environmentObject(session)
+                .onAppear { session.start() }
         }
-    }
-}
-
-class SipWatchDelegate: NSObject, WKApplicationDelegate {
-    func applicationDidBecomeActive() {
-        // Reload complications on wake
-        CLKComplicationServer.sharedInstance().reloadComplicationDescriptors()
-        WidgetCenter.shared.reloadAllTimelines()
     }
 }

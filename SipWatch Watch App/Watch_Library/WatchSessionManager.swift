@@ -21,6 +21,7 @@ import Foundation
 import WatchConnectivity
 import WatchKit
 import WidgetKit
+import Combine
 
 @MainActor
 class WatchSessionManager: NSObject, ObservableObject {

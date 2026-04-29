@@ -1,5 +1,13 @@
 //
 //  PhoneSessionManager.swift
+//  sip-dynamic-hydration
+//
+//  Created by Michael Brockman on 4/29/26.
+//
+
+
+//
+//  PhoneSessionManager.swift
 //  sip-dynamic-hydration (iPhone target ONLY)
 //
 //  Responsibilities:

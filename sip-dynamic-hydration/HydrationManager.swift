@@ -20,7 +20,7 @@ struct DailyIntake: Identifiable {
     var goalML: Double = 2000
 }
 
-
+// LogButton is defined in SharedLogic.swift (shared with widget target)
 typealias LogButtonTuple = (amount: Double, label: String)
 
 // MARK: - HydrationManager
@@ -340,8 +340,10 @@ class HydrationManager: ObservableObject {
             handleGoalAchieved()
         } else {
             ensureActivityRunning(forceUpdate: true)
-            refreshDailySummary()  // Update summary with fresh progress
+            refreshDailySummary()
         }
+        // Push to watch immediately after every drink log
+        PhoneSessionManager.shared.pushStateToWatch()
     }
 
     private func handleGoalAchieved() {
@@ -441,7 +443,8 @@ class HydrationManager: ObservableObject {
         Constants.defaults.set(reasonText, forKey: "adaptiveReason")
         Constants.defaults.set(Date(), forKey: lastAdjustKey)
         ensureActivityRunning(forceUpdate: true)
-        refreshDailySummary()  // Reschedule with updated goal context
+        refreshDailySummary()
+        PhoneSessionManager.shared.pushStateToWatch()
 
         let content = UNMutableNotificationContent()
         content.title = "Goal Updated 💧"

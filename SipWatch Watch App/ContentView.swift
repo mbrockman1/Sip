@@ -2,68 +2,61 @@
 //  ContentView.swift
 //  SipWatch Watch App
 //
+//  Driven entirely by WatchSessionManager — no App Group reads, no timers.
+//  State arrives via WatchConnectivity and decays locally via TimelineView.
+//
 
 import SwiftUI
 import WidgetKit
-import Combine
 
 struct WatchContentView: View {
-    @State private var currentML: Double = 0
-    @State private var goalML: Double = 2000
-    @State private var lastDrink: Date = Date()
-    @State private var isOunces: Bool = false
-    @State private var streak: Int = 0
-    @State private var goalAdjustedBy: Double = 0
-
-    // Polls App Group every 30s so watch stays in sync with phone
-    private let timer = Timer.publish(every: 30, on: .main, in: .common).autoconnect()
-
-    // Clean static button amounts
-    private var btn1Amount: Double { isOunces ? 354.88 : 250.0 }  // 12 oz / 250 ml
-    private var btn2Amount: Double { isOunces ? 473.18 : 500.0 }  // 16 oz / 500 ml
-    private var btn1Label:  String { isOunces ? "+12 oz" : "+250 ml" }
-    private var btn2Label:  String { isOunces ? "+16 oz" : "+500 ml" }
+    @EnvironmentObject var session: WatchSessionManager
 
     var body: some View {
-        TimelineView(.periodic(from: lastDrink, by: 30)) { context in
-            let current = HydrationMath.currentLevel(
-                intake: currentML, lastDrink: lastDrink, now: context.date)
-            let fill = HydrationMath.fillRatio(current: current, goal: goalML)
-            let minsSince = context.date.timeIntervalSince(lastDrink) / 60
+        TimelineView(.periodic(from: session.lastDrinkDate, by: 30)) { context in
+            let current = session.liveLevel(at: context.date)
+            let fill    = session.fillRatio(at: context.date)
+            let mins    = context.date.timeIntervalSince(session.lastDrinkDate) / 60
 
             ScrollView {
                 VStack(spacing: 10) {
 
-                    // Header: level + streak
+                    // ── Level + streak ────────────────────────────────
                     HStack(alignment: .top) {
                         VStack(alignment: .leading, spacing: 2) {
-                            Text(HydrationMath.formatLabel(amount: current, isOunces: isOunces))
+                            Text(HydrationMath.formatLabel(amount: current, isOunces: session.isOunces))
                                 .font(.system(size: 24, weight: .bold, design: .rounded))
                                 .foregroundColor(.cyan)
                                 .contentTransition(.numericText())
-                            Text("of \(HydrationMath.formatLabel(amount: goalML, isOunces: isOunces))")
+                            Text("of \(HydrationMath.formatLabel(amount: session.goalML, isOunces: session.isOunces))")
                                 .font(.caption2)
                                 .foregroundColor(.secondary)
                         }
                         Spacer()
-                        if streak > 0 {
-                            VStack(alignment: .trailing, spacing: 1) {
-                                Text(StreakManager.flameEmoji(for: streak))
+                        VStack(alignment: .trailing, spacing: 1) {
+                            if session.streak > 0 {
+                                Text(StreakManager.flameEmoji(for: session.streak))
                                     .font(.system(size: 16))
-                                Text("\(streak)d")
+                                Text("\(session.streak)d")
                                     .font(.system(size: 10, weight: .bold))
                                     .foregroundColor(.orange)
+                            }
+                            // Sync indicator
+                            if !session.isPhoneReachable {
+                                Image(systemName: "iphone.slash")
+                                    .font(.system(size: 8))
+                                    .foregroundColor(.secondary)
                             }
                         }
                     }
 
-                    // Progress bar with %
+                    // ── Progress bar with % ───────────────────────────
                     GeometryReader { geo in
                         ZStack(alignment: .leading) {
                             Capsule().fill(Color.cyan.opacity(0.15))
                             Capsule()
                                 .fill(LinearGradient(
-                                    colors: [.blue, .cyan],
+                                    colors: fill >= 1 ? [.green, .green] : [.blue, .cyan],
                                     startPoint: .leading, endPoint: .trailing))
                                 .frame(width: max(0, geo.size.width * fill))
                                 .animation(.spring(response: 0.5), value: fill)
@@ -77,12 +70,12 @@ struct WatchContentView: View {
                     }
                     .frame(height: 16)
 
-                    // Decay + adaptive row
+                    // ── Decay + adaptive ──────────────────────────────
                     HStack(spacing: 6) {
                         Circle()
-                            .fill(minsSince < 30 ? Color.green : minsSince < 90 ? Color.yellow : Color.orange)
+                            .fill(mins < 30 ? Color.green : mins < 90 ? Color.yellow : Color.orange)
                             .frame(width: 5, height: 5)
-                        Text(timeSinceLabel(mins: minsSince))
+                        Text(timeSinceLabel(mins: mins))
                             .font(.system(size: 9))
                             .foregroundColor(.secondary)
                         Image(systemName: "arrow.down")
@@ -92,17 +85,17 @@ struct WatchContentView: View {
                             .font(.system(size: 9))
                             .foregroundColor(.secondary)
                         Spacer()
-                        if goalAdjustedBy > 0 {
+                        if session.goalAdjustedBy > 0 {
                             Image(systemName: "thermometer.sun.fill")
                                 .font(.system(size: 10))
                                 .foregroundColor(.orange)
                         }
                     }
 
-                    // Log buttons
+                    // ── Log buttons (labels from phone settings) ──────
                     HStack(spacing: 6) {
-                        Button(action: { logDrink(amountML: btn1Amount) }) {
-                            Text(btn1Label)
+                        Button(action: { session.logDrink(amountML: session.btn1Amount) }) {
+                            Text(session.btn1Label)
                                 .font(.system(size: 13, weight: .bold))
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 8)
@@ -112,8 +105,8 @@ struct WatchContentView: View {
                         }
                         .buttonStyle(.plain)
 
-                        Button(action: { logDrink(amountML: btn2Amount) }) {
-                            Text(btn2Label)
+                        Button(action: { session.logDrink(amountML: session.btn2Amount) }) {
+                            Text(session.btn2Label)
                                 .font(.system(size: 13, weight: .bold))
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 8)
@@ -127,36 +120,5 @@ struct WatchContentView: View {
                 .padding(8)
             }
         }
-        .onAppear { reloadState() }
-        .onReceive(timer) { _ in reloadState() }
-    }
-
-    private func reloadState() {
-        let d = Constants.defaults
-        let savedGoal = d.double(forKey: "dailyGoalML")
-        goalML         = savedGoal == 0 ? 2000 : savedGoal
-        currentML      = d.double(forKey: "currentIntakeML")
-        isOunces       = d.bool(forKey: "isOunces")
-        lastDrink      = d.object(forKey: "lastDrinkTimestamp") as? Date ?? Date()
-        streak         = StreakManager.computeStreak()
-        goalAdjustedBy = d.double(forKey: "goalAdjustedBy")
-    }
-
-    private func logDrink(amountML: Double) {
-        WKInterfaceDevice.current().play(.click)
-        let d = Constants.defaults
-        let intake = d.double(forKey: "currentIntakeML")
-        let ts = d.object(forKey: "lastDrinkTimestamp") as? Date ?? Date()
-        let newLevel = HydrationMath.currentLevel(intake: intake, lastDrink: ts, now: Date()) + amountML
-        d.set(newLevel, forKey: "currentIntakeML")
-        d.set(Date(), forKey: "lastDrinkTimestamp")
-
-        var pending = d.array(forKey: "pendingHKLogs") as? [Double] ?? []
-        pending.append(amountML)
-        d.set(pending, forKey: "pendingHKLogs")
-
-        currentML = newLevel
-        lastDrink = Date()
-        WidgetCenter.shared.reloadAllTimelines()
     }
 }

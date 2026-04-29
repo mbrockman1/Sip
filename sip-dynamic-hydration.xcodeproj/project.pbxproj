@@ -135,6 +135,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Watch_Library/Watch_Library.swift,
+				Watch_Library/WatchSessionManager.swift,
 			);
 			target = 4CD220FC2FA1304D00AB31DE /* SipWatchWidgetExtension */;
 		};
@@ -144,6 +145,7 @@
 				Assets.xcassets,
 				HydrationManager.swift,
 				iOS_Library/iOS_Library.swift,
+				iOS_Library/PhoneSessionManager.swift,
 				Views/SettingsView.swift,
 			);
 			target = 4C280E762FA0448F00B28D48 /* SipWidgetExtension */;
