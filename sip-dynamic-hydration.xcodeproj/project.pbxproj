@@ -643,6 +643,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "sip-dynamic-hydration/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Sip - Dynamic Hydration";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "eeded to read your water intake to keep your hydration bar synced.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Needed to save your logged water to Apple Health.";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
@@ -685,6 +686,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "sip-dynamic-hydration/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Sip - Dynamic Hydration";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "eeded to read your water intake to keep your hydration bar synced.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Needed to save your logged water to Apple Health.";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
@@ -801,7 +803,7 @@
 				DEVELOPMENT_TEAM = L8A3PF8RFV;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "SipWatch - Dynamic Hydration";
+				INFOPLIST_KEY_CFBundleDisplayName = SipWatch;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "org.mjbapps.sip-dynamic-hydration";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -835,7 +837,7 @@
 				DEVELOPMENT_TEAM = L8A3PF8RFV;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "SipWatch - Dynamic Hydration";
+				INFOPLIST_KEY_CFBundleDisplayName = SipWatch;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "org.mjbapps.sip-dynamic-hydration";
 				LD_RUNPATH_SEARCH_PATHS = (

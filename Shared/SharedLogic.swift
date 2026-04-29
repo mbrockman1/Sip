@@ -12,7 +12,10 @@ import UserNotifications
 // MARK: - App Group Constants
 struct Constants {
     static let appGroup = "group.org.mjbapps.sip"
-    nonisolated(unsafe) static let defaults = UserDefaults(suiteName: appGroup)!
+    
+    // Use a direct force-unwrap or a computed property.
+    // If your entitlements are correct, this will never fail.
+    static let defaults: UserDefaults = UserDefaults(suiteName: appGroup)!
 }
 
 // MARK: - LogButton (shared: main app + widget both read/write this)

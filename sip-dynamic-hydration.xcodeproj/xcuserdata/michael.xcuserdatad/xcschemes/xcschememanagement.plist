@@ -4,10 +4,15 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>SipWatch Watch App.xcscheme_^#shared#^_</key>
+		<key>Sip App.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>3</integer>
+		</dict>
+		<key>SipWatch Watch App.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>0</integer>
 		</dict>
 		<key>SipWatchWidgetExtension.xcscheme_^#shared#^_</key>
 		<dict>
@@ -23,6 +28,29 @@
 		<dict>
 			<key>orderHint</key>
 			<integer>0</integer>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>4C280E632FA043AC00B28D48</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>4C280E762FA0448F00B28D48</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>4CD220C42FA11B2C00AB31DE</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>4CD220FC2FA1304D00AB31DE</key>
+		<dict>
+			<key>primary</key>
+			<true/>
 		</dict>
 	</dict>
 </dict>

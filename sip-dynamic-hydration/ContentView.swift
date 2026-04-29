@@ -147,15 +147,16 @@ struct SipDashboardView: View {
                     if let badge = manager.milestoneBadge {
                         MilestoneBadgeView(badge: badge) { manager.dismissMilestoneBadge() }
                     }
-
-                    TodayDashboardCard()
-                    StreakCard()
-                    LogButtonRow()
                     HydrationChartCard()
+                    TodayDashboardCard()
+                    LogButtonRow()
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 8)
                 .padding(.bottom, 32)
+            }
+            .refreshable {
+                manager.syncFromHealthKit()
             }
             .background(Color(UIColor.systemGroupedBackground).ignoresSafeArea())
             .navigationTitle("Sip")
@@ -168,7 +169,11 @@ struct SipDashboardView: View {
 
 struct TodayDashboardCard: View {
     @EnvironmentObject var manager: HydrationManager
-
+ 
+    private var nextMilestone: Int {
+        [3, 7, 14, 30].first(where: { $0 > manager.currentStreak }) ?? (manager.currentStreak + 7)
+    }
+ 
     var body: some View {
         TimelineView(.periodic(from: manager.lastDrinkTimestamp, by: 30)) { context in
             let current = HydrationMath.currentLevel(
@@ -178,22 +183,35 @@ struct TodayDashboardCard: View {
             )
             let fillRatio = HydrationMath.fillRatio(current: current, goal: manager.dailyGoalML)
             let minsSince = context.date.timeIntervalSince(manager.lastDrinkTimestamp) / 60
-
+ 
             VStack(spacing: 0) {
+                // ── Header row ────────────────────────────────────────
                 HStack {
                     Label("TODAY", systemImage: "sun.max")
                         .font(.caption.bold()).foregroundColor(.secondary)
                     Spacer()
+                    // Streak inline in header
+                    HStack(spacing: 4) {
+                        Text(StreakManager.flameEmoji(for: manager.currentStreak))
+                            .font(.system(size: 14))
+                        if manager.currentStreak > 0 {
+                            Text("\(manager.currentStreak)d")
+                                .font(.caption.bold())
+                                .foregroundColor(.orange)
+                        }
+                    }
                     if manager.goalAdjustedBy > 0 {
                         Label("Adjusted", systemImage: "thermometer.sun.fill")
                             .font(.caption2.bold()).foregroundColor(.orange)
+                            .padding(.leading, 6)
                     }
                 }
                 .padding(.bottom, 14)
-
+ 
+                // ── Level + decay ─────────────────────────────────────
                 HStack(alignment: .center, spacing: 18) {
                     LiquidFillTube(fillRatio: fillRatio, height: 110)
-
+ 
                     VStack(alignment: .leading, spacing: 8) {
                         VStack(alignment: .leading, spacing: 2) {
                             Text(HydrationMath.formatLabel(amount: current, isOunces: manager.isOunces))
@@ -207,8 +225,19 @@ struct TodayDashboardCard: View {
                     }
                     Spacer(minLength: 0)
                 }
-
-                SipProgressBar(fillRatio: fillRatio).padding(.top, 14)
+ 
+                // SipProgressBar(fillRatio: fillRatio).padding(.top, 14)
+ 
+                // ── Streak subtitle ───────────────────────────────────
+                HStack {
+                    Text(manager.currentStreak == 0
+                         ? "Hit your goal today to start a streak"
+                         : "\(nextMilestone - manager.currentStreak) days to next badge")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Spacer()
+                }
+                .padding(.top, 8)
             }
             .padding(18)
             .background(Color(UIColor.secondarySystemGroupedBackground))
@@ -286,34 +315,6 @@ struct DecayIndicatorView: View {
     }
 }
 
-// MARK: - Streak Card
-
-struct StreakCard: View {
-    @EnvironmentObject var manager: HydrationManager
-    private var nextMilestone: Int {
-        [3, 7, 14, 30].first(where: { $0 > manager.currentStreak }) ?? (manager.currentStreak + 7)
-    }
-    var body: some View {
-        HStack(spacing: 14) {
-            Text(StreakManager.flameEmoji(for: manager.currentStreak)).font(.system(size: 28))
-            VStack(alignment: .leading, spacing: 2) {
-                Text(manager.currentStreak == 0 ? "Start your streak" : "\(manager.currentStreak)-Day Streak")
-                    .font(.subheadline.bold())
-                Text(manager.currentStreak == 0 ? "Hit your goal today"
-                     : "\(nextMilestone - manager.currentStreak) days to next badge")
-                    .font(.caption).foregroundColor(.secondary)
-            }
-            Spacer()
-            if manager.currentStreak > 0 {
-                Text("\(manager.currentStreak)")
-                    .font(.system(size: 26, weight: .bold, design: .rounded)).foregroundColor(.orange)
-            }
-        }
-        .padding(.horizontal, 16).padding(.vertical, 12)
-        .background(Color(UIColor.secondarySystemGroupedBackground))
-        .cornerRadius(16)
-    }
-}
 
 // MARK: - Log Button Row
 
