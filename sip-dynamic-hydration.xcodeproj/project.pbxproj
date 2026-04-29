@@ -135,7 +135,6 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Watch_Library/Watch_Library.swift,
-				Watch_Library/WatchSessionManager.swift,
 			);
 			target = 4CD220FC2FA1304D00AB31DE /* SipWatchWidgetExtension */;
 		};
@@ -145,8 +144,6 @@
 				Assets.xcassets,
 				HydrationManager.swift,
 				iOS_Library/iOS_Library.swift,
-				iOS_Library/PhoneSessionManager.swift,
-				Views/SettingsView.swift,
 			);
 			target = 4C280E762FA0448F00B28D48 /* SipWidgetExtension */;
 		};
@@ -646,7 +643,7 @@
 				INFOPLIST_FILE = "sip-dynamic-hydration/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Sip - Dynamic Hydration";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "eeded to read your water intake to keep your hydration bar synced.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Needed to read your water intake to keep your hydration bar synced.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Needed to save your logged water to Apple Health.";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -658,7 +655,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.20260428;
+				MARKETING_VERSION = 0.20260429;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.mjbapps.sip-dynamic-hydration";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -689,7 +686,7 @@
 				INFOPLIST_FILE = "sip-dynamic-hydration/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Sip - Dynamic Hydration";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "eeded to read your water intake to keep your hydration bar synced.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Needed to read your water intake to keep your hydration bar synced.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Needed to save your logged water to Apple Health.";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -701,7 +698,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.20260428;
+				MARKETING_VERSION = 0.20260429;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.mjbapps.sip-dynamic-hydration";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -739,7 +736,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 0.20260428;
+				MARKETING_VERSION = 0.20260429;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.mjbapps.sip-dynamic-hydration.SipWidget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -777,7 +774,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 0.20260428;
+				MARKETING_VERSION = 0.20260429;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.mjbapps.sip-dynamic-hydration.SipWidget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -805,14 +802,17 @@
 				DEVELOPMENT_TEAM = L8A3PF8RFV;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "SipWatch-Watch-App-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = SipWatch;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Needed to read your water intake to keep your hydration bar synced.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Needed to save your logged water to Apple Health.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "org.mjbapps.sip-dynamic-hydration";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.20260428;
+				MARKETING_VERSION = 0.20260429;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.mjbapps.sip-dynamic-hydration.watchkitapp";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
@@ -839,14 +839,17 @@
 				DEVELOPMENT_TEAM = L8A3PF8RFV;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "SipWatch-Watch-App-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = SipWatch;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Needed to read your water intake to keep your hydration bar synced.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Needed to save your logged water to Apple Health.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "org.mjbapps.sip-dynamic-hydration";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.20260428;
+				MARKETING_VERSION = 0.20260429;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.mjbapps.sip-dynamic-hydration.watchkitapp";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
@@ -874,6 +877,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SipWatchWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = SipWatchWidget;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Needed to read your water intake to keep your hydration bar synced.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Needed to save your logged water to Apple Health.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -881,7 +886,7 @@
 					"@executable_path/../../Frameworks",
 					"@executable_path/../../../../Frameworks",
 				);
-				MARKETING_VERSION = 0.20260428;
+				MARKETING_VERSION = 0.20260429;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.mjbapps.sip-dynamic-hydration.watchkitapp.SipWatchWidget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
@@ -908,6 +913,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SipWatchWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = SipWatchWidget;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Needed to read your water intake to keep your hydration bar synced.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Needed to save your logged water to Apple Health.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -915,7 +922,7 @@
 					"@executable_path/../../Frameworks",
 					"@executable_path/../../../../Frameworks",
 				);
-				MARKETING_VERSION = 0.20260428;
+				MARKETING_VERSION = 0.20260429;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.mjbapps.sip-dynamic-hydration.watchkitapp.SipWatchWidget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;

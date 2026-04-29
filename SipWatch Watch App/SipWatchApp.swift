@@ -1,24 +1,24 @@
-//
-//  SipWatchApp.swift
-//  SipWatch Watch App
-//
-//  Target: Watch App ONLY
-//
-
 import SwiftUI
-import WatchKit
-import WidgetKit
 
 @main
 struct SipWatchApp: App {
-    // WatchSessionManager is the single source of truth on the watch
-    @StateObject private var session = WatchSessionManager.shared
+    // FIXED: Changed from WatchSessionManager to WatchManager
+    @StateObject var manager = WatchManager()
+    @Environment(\.scenePhase) var scenePhase
 
     var body: some Scene {
         WindowGroup {
             WatchContentView()
-                .environmentObject(session)
-                .onAppear { session.start() }
+                .environmentObject(manager)
+                .onAppear {
+                    manager.requestAuthorization()
+                }
+                .onChange(of: scenePhase) { newPhase in
+                    if newPhase == .active {
+                        manager.fetchTodayData()
+                    }
+                }
+                .onOpenURL { _ in }
         }
     }
 }

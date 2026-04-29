@@ -35,6 +35,8 @@ struct UrgencyStyle {
 
 // MARK: - Live Activity
  
+
+
 struct SipLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: HydrationAttributes.self) { context in
@@ -67,6 +69,7 @@ struct SipLiveActivity: Widget {
                     .font(.system(size: 10, weight: .semibold))
             }
         }
+        .supplementalActivityFamilies([.small])
     }
 }
 
@@ -292,15 +295,9 @@ struct CompactLeadingView: View {
     }
 }
 
-
-// MARK: - Lock Screen View
-// Layout matches screenshot:
-//   Row 1: [Big number]  [Progress bar with % inside]  [streak/adaptive]
-//   Row 2:               [clock X ago  ↓ −1 ml/min]
-//   Row 3: [btn1]  [btn2]  [btn3]
- 
 struct LockScreenView: View {
     let context: ActivityViewContext<HydrationAttributes>
+    @Environment(\.activityFamily) var activityFamily
  
     var body: some View {
         TimelineView(.periodic(from: context.state.lastDrinkTimestamp, by: 60)) { tl in
@@ -312,104 +309,174 @@ struct LockScreenView: View {
             let mins = tl.date.timeIntervalSince(context.state.lastDrinkTimestamp) / 60
             let btns = readLogButtons(isOunces: context.state.isOunces)
  
-            VStack(alignment: .leading, spacing: 10) {
+            // Branch: Watch Smart Stack gets its own compact layout
+            if activityFamily == .small {
+                WatchSmartStackView(
+                    context: context,
+                    current: current,
+                    fill: fill,
+                    mins: mins
+                )
+            } else {
+                IPhoneLockScreenContent(
+                    context: context,
+                    current: current,
+                    fill: fill,
+                    mins: mins,
+                    btns: btns
+                )
+            }
  
-                // ── Row 1: number  |  progress bar  |  streak ────────
-                HStack(alignment: .center, spacing: 10) {
+        }   // end if/else activityFamily
+    }   // end TimelineView closure
+}
+
+struct IPhoneLockScreenContent: View {
+    let context: ActivityViewContext<HydrationAttributes>
+    let current: Double
+    let fill: Double
+    let mins: Double
+    let btns: [(amount: Double, label: String)]
  
-                    // Big level number
-                    VStack(alignment: .leading, spacing: 1) {
-                        Text(HydrationMath.formatLabel(amount: current, isOunces: context.state.isOunces))
-                            .font(.system(size: 26, weight: .bold, design: .rounded).monospacedDigit())
-                            .foregroundStyle(.blue)
-                        Text("of \(HydrationMath.formatLabel(amount: context.state.dailyGoal, isOunces: context.state.isOunces))")
-                            .font(.caption2)
-                            .foregroundColor(.secondary)
-                    }
-                    .frame(width: 80, alignment: .leading)
- 
-                    // Progress bar — fills remaining space
-                    GeometryReader { proxy in
-                        ZStack(alignment: .leading) {
-                            Capsule()
-                                .fill(Color.blue.opacity(0.15))
-                            Capsule()
-                                .fill(LinearGradient(
-                                    colors: [.blue.opacity(0.75), .blue],
-                                    startPoint: .leading, endPoint: .trailing))
-                                .frame(width: max(0, proxy.size.width * fill))
-                                .animation(.spring(response: 0.45), value: fill)
-                            // % label inside bar
-                            if fill > 0.1 {
-                                Text("\(Int(fill * 100))%")
-                                    .font(.system(size: 11, weight: .bold))
-                                    .foregroundColor(.white)
-                                    .padding(.leading, 8)
-                            }
-                        }
-                    }
-                    .frame(height: 22)
- 
-                    // Streak + adaptive — right edge
-                    VStack(alignment: .trailing, spacing: 2) {
-                        if context.state.streak > 0 {
-                            HStack(spacing: 2) {
-                                Text(StreakManager.flameEmoji(for: context.state.streak))
-                                    .font(.system(size: 11))
-                                Text("\(context.state.streak)d")
-                                    .font(.system(size: 10, weight: .bold))
-                                    .foregroundColor(.orange)
-                            }
-                        }
-                        if context.state.goalAdjustedBy > 0 {
-                            Image(systemName: "thermometer.sun.fill")
-                                .font(.system(size: 9))
-                                .foregroundColor(.orange)
-                        }
-                    }
-                    .frame(width: 36, alignment: .trailing)
+    var body: some View {
+        VStack() {
+            // Row 1: number | progress bar | streak
+            
+            HStack(alignment: .center, spacing: 10) {
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(HydrationMath.formatLabel(amount: current, isOunces: context.state.isOunces))
+                        .font(.system(size: 26, weight: .bold, design: .rounded).monospacedDigit())
+                        .foregroundStyle(.blue)
+                    Text("of \(HydrationMath.formatLabel(amount: context.state.dailyGoal, isOunces: context.state.isOunces))")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
                 }
+                .frame(width: 80, alignment: .leading)
  
-                // ── Row 2: time since + drain rate ────────────────────
-                HStack(spacing: 12) {
-                    HStack(spacing: 3) {
-                        Image(systemName: "clock").font(.system(size: 9))
-                        Text(timeSinceLabel(mins: mins)).font(.system(size: 11))
-                    }
-                    .foregroundColor(mins > 90 ? .orange : .secondary)
- 
-                    HStack(spacing: 3) {
-                        Image(systemName: "arrow.down").font(.system(size: 9))
-                        Text("−1 ml/min").font(.system(size: 11))
-                    }
-                    .foregroundColor(.secondary)
- 
-                    Spacer()
-                }
-                .padding(.leading, 90)   // align under the progress bar
- 
-                // ── Row 3: 3 log buttons ──────────────────────────────
-                HStack(spacing: 8) {
-                    ForEach(0..<btns.count, id: \.self) { i in
-                        Button(intent: LogWaterIntent(amount: btns[i].amount)) {
-                            Text(btns[i].label)
-                                .font(.system(size: 13, weight: .bold))
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.75)
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 9)
-                                .background(i == 2
-                                    ? Color.blue.opacity(0.28)
-                                    : Color.blue.opacity(0.12))
-                                .foregroundColor(.blue)
-                                .cornerRadius(10)
+                GeometryReader { proxy in
+                    ZStack(alignment: .leading) {
+                        Capsule().fill(Color.blue.opacity(0.15))
+                        Capsule()
+                            .fill(LinearGradient(
+                                colors: [.blue.opacity(0.75), .blue],
+                                startPoint: .leading, endPoint: .trailing))
+                            .frame(width: max(0, proxy.size.width * fill))
+                            .animation(.spring(response: 0.45), value: fill)
+                        if fill > 0.1 {
+                            Text("\(Int(fill * 100))%")
+                                .font(.system(size: 11, weight: .bold))
+                                .foregroundColor(.white)
+                                .padding(.leading, 8)
                         }
+                    
+                    }
+                }
+                
+                .frame(height: 10)
+ 
+                VStack(alignment: .trailing, spacing: 2) {
+                    if context.state.streak > 0 {
+                        HStack(spacing: 2) {
+                            Text(StreakManager.flameEmoji(for: context.state.streak)).font(.system(size: 11))
+                            Text("\(context.state.streak)d").font(.system(size: 10, weight: .bold)).foregroundColor(.orange)
+                        }
+                    }
+                    if context.state.goalAdjustedBy > 0 {
+                        Image(systemName: "thermometer.sun.fill").font(.system(size: 9)).foregroundColor(.orange)
+                    }
+                }
+                .frame(width: 36, alignment: .trailing)
+            }
+ 
+            // Row 2: time since + drain
+            HStack(spacing: 12) {
+                HStack(spacing: 3) {
+                    Image(systemName: "clock").font(.system(size: 9))
+                    Text(timeSinceLabel(mins: mins)).font(.system(size: 11))
+                }
+                .foregroundColor(mins > 90 ? .orange : .secondary)
+                HStack(spacing: 3) {
+                    Image(systemName: "arrow.down").font(.system(size: 9))
+                    Text("−1 ml/min").font(.system(size: 11))
+                }
+                .foregroundColor(.secondary)
+                Spacer()
+            }
+            .padding(.leading, 90)
+ 
+            // Row 3: 3 log buttons
+            HStack(spacing: 8) {
+                ForEach(0..<btns.count, id: \.self) { i in
+                    Button(intent: LogWaterIntent(amount: btns[i].amount)) {
+                        Text(btns[i].label)
+                            .font(.system(size: 13, weight: .bold))
+                            .lineLimit(1).minimumScaleFactor(0.75)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 9)
+                            .background(i == 2 ? Color.blue.opacity(0.28) : Color.blue.opacity(0.12))
+                            .foregroundColor(.blue)
+                            .cornerRadius(10)
                     }
                 }
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
         }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+    }
+}
+ 
+// MARK: - Watch Smart Stack View (.small activityFamily)
+// Compact card designed for the ~170x90pt Smart Stack slot
+// Shows: level, progress bar with %, decay indicator, adaptive flag, 2 tap-to-log buttons
+ 
+struct WatchSmartStackView: View {
+    let context: ActivityViewContext<HydrationAttributes>
+    let current: Double
+    let fill: Double
+    let mins: Double
+ 
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+ 
+            // Row 1: level number + streak/adaptive right-aligned
+            HStack(alignment: .firstTextBaseline) {
+                Text(HydrationMath.formatLabel(amount: current, isOunces: context.state.isOunces))
+                    .font(.system(size: 22, weight: .bold, design: .rounded).monospacedDigit())
+                    .foregroundStyle(.blue)
+                Text("/ \(HydrationMath.formatLabel(amount: context.state.dailyGoal, isOunces: context.state.isOunces))")
+                    .font(.system(size: 11))
+                    .foregroundColor(.secondary)
+                Spacer()
+                HStack(spacing: 4) {
+                    Text(timeSinceLabel(mins: mins))
+                        .font(.system(size: 10))
+                        .foregroundColor(.secondary)
+                }
+            }
+ 
+            // Row 2: progress bar with % inside
+            GeometryReader { proxy in
+                ZStack(alignment: .leading) {
+                    Capsule().fill(Color.blue.opacity(0.18))
+                    Capsule()
+                        .fill(LinearGradient(
+                            colors: fill >= 1 ? [.green, .green] : [.blue, .cyan],
+                            startPoint: .leading, endPoint: .trailing))
+                        .frame(width: max(0, proxy.size.width * fill))
+                        .animation(.spring(response: 0.45), value: fill)
+                    if fill > 0.12 {
+                        Text("\(Int(fill * 100))%")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundColor(.white)
+                            .padding(.leading, 7)
+                    }
+                }
+            }
+            .frame(height: 18)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .widgetURL(URL(string: "sipwatch://open"))
     }
 }
 

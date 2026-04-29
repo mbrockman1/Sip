@@ -1,8 +1,3 @@
-//
-//  sip_dynamic_hydrationApp.swift
-//  sip-dynamic-hydration
-//
-
 import SwiftUI
 
 @main
@@ -15,8 +10,8 @@ struct sip_dynamic_hydrationApp: App {
             ContentView()
                 .environmentObject(manager)
                 .onAppear {
-                    // Start WatchConnectivity — phone is the hub
-                    PhoneSessionManager.shared.start(manager: manager)
+                    // We don't need PhoneSessionManager because 
+                    // HydrationManager handles WCSession internally now!
                 }
                 .onChange(of: scenePhase) { _, newPhase in
                     if newPhase == .active {
@@ -24,11 +19,13 @@ struct sip_dynamic_hydrationApp: App {
                         manager.syncPendingAppGroupLogs()
                         manager.syncFromHealthKit()
                         manager.refreshDailySummary()
+                        
                         if manager.useAdaptiveGoals {
                             Task { await manager.refreshAdaptiveGoal() }
                         }
-                        // Push fresh state to watch whenever app foregrounds
-                        PhoneSessionManager.shared.pushStateToWatch()
+                        
+                        // Use the function now directly on the manager
+                        manager.pushStateToWatch()
                     }
                 }
         }

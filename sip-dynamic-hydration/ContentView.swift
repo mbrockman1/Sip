@@ -210,7 +210,7 @@ struct TodayDashboardCard: View {
  
                 // ── Level + decay ─────────────────────────────────────
                 HStack(alignment: .center, spacing: 18) {
-                    LiquidFillTube(fillRatio: fillRatio, height: 110)
+                    LiquidFillTube(fillRatio: fillRatio, height: 100)
  
                     VStack(alignment: .leading, spacing: 8) {
                         VStack(alignment: .leading, spacing: 2) {
@@ -221,23 +221,15 @@ struct TodayDashboardCard: View {
                             Text("of \(HydrationMath.formatLabel(amount: manager.dailyGoalML, isOunces: manager.isOunces))")
                                 .font(.subheadline).foregroundColor(.secondary)
                         }
-                        DecayIndicatorView(minutesSince: minsSince)
+                        Text("Current Sip Streak: \(manager.currentStreak)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        
                     }
-                    Spacer(minLength: 0)
-                }
- 
-                // SipProgressBar(fillRatio: fillRatio).padding(.top, 14)
- 
-                // ── Streak subtitle ───────────────────────────────────
-                HStack {
-                    Text(manager.currentStreak == 0
-                         ? "Hit your goal today to start a streak"
-                         : "\(nextMilestone - manager.currentStreak) days to next badge")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
                     Spacer()
+                    DecayIndicatorView(minutesSince: minsSince)
                 }
-                .padding(.top, 8)
+
             }
             .padding(18)
             .background(Color(UIColor.secondarySystemGroupedBackground))
@@ -304,7 +296,7 @@ struct DecayIndicatorView: View {
                 Circle().fill(urgencyColor).frame(width: 6, height: 6)
                 Text("Last sip \(timeLabel)").font(.caption).foregroundColor(.secondary)
             }
-            HStack(spacing: 4) {
+            HStack(spacing: 5) {
                 Image(systemName: "arrow.down").font(.caption2).foregroundColor(.cyan.opacity(0.6))
                 Text("Draining −1 ml/min").font(.caption2).foregroundColor(.secondary)
             }
@@ -336,6 +328,8 @@ struct LogButtonRow: View {
                         .background(i == 2 ? Color.cyan : i == 1 ? Color.cyan.opacity(0.18) : Color.cyan.opacity(0.09))
                         .foregroundColor(i == 2 ? .white : .cyan)
                         .cornerRadius(14)
+                    
+                
                 }
                 .simultaneousGesture(
                     LongPressGesture(minimumDuration: 0.5).onEnded { _ in
@@ -343,7 +337,15 @@ struct LogButtonRow: View {
                         longPressedSlot = i
                         showCustomSheet = true
                     }
-                )
+                )  
+            }
+            if !manager.todaysSamples.isEmpty {
+                Button(action: { manager.undoLastDrink() }) {
+                    Label("Undo Last Drink", systemImage: "arrow.uturn.backward.circle")
+                        .font(.footnote.bold())
+                        .foregroundColor(.secondary)
+                }
+                .padding(.top, 8)
             }
         }
         .sheet(isPresented: $showCustomSheet) {

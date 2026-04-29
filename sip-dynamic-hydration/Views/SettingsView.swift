@@ -37,6 +37,8 @@ struct SettingsView: View {
                         }
                     }
                 }
+                
+                NavigationLink("Manage Today's Logs", destination: HistoryView().environmentObject(manager))
 
                 // ── Log Buttons ───────────────────────────────────────
                 Section(
@@ -79,6 +81,7 @@ struct SettingsView: View {
                         }
                     }
                 }
+                
 
                 // ── Smart Goals ───────────────────────────────────────
                 Section(
@@ -91,6 +94,7 @@ struct SettingsView: View {
                             .foregroundColor(.cyan)
                     }
                 }
+                
 
                 // ── Notifications ─────────────────────────────────────
                 Section(

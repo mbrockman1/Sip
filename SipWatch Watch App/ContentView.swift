@@ -2,21 +2,34 @@
 //  ContentView.swift
 //  SipWatch Watch App
 //
-//  Driven entirely by WatchSessionManager — no App Group reads, no timers.
-//  State arrives via WatchConnectivity and decays locally via TimelineView.
-//
 
 import SwiftUI
 import WidgetKit
+import WatchConnectivity // Needed to check if iPhone is reachable
 
 struct WatchContentView: View {
-    @EnvironmentObject var session: WatchSessionManager
+    // 1. FIXED: Removed the () causing the crash, and renamed to 'manager'
+    @EnvironmentObject var manager: WatchManager
 
     var body: some View {
-        TimelineView(.periodic(from: session.lastDrinkDate, by: 30)) { context in
-            let current = session.liveLevel(at: context.date)
-            let fill    = session.fillRatio(at: context.date)
-            let mins    = context.date.timeIntervalSince(session.lastDrinkDate) / 60
+        // 2. FIXED: Uses the actual variables from WatchManager
+        TimelineView(.periodic(from: manager.lastDrinkTimestamp, by: 30)) { context in
+            
+            // 3. FIXED: Re-wired the math to use the WatchMath struct
+            let current = WatchMath.currentLevel(intake: manager.currentIntakeML, lastDrink: manager.lastDrinkTimestamp, now: context.date)
+            let safeGoal = manager.dailyGoalML > 0 ? manager.dailyGoalML : 2000
+            let fill = min(1.0, max(0.0, current / safeGoal))
+            let mins = context.date.timeIntervalSince(manager.lastDrinkTimestamp) / 60
+            
+            // 4. Safely grab missing states (Streak, iPhone connection, etc.)
+            let streak = UserDefaults.standard.integer(forKey: "currentStreak")
+            let goalAdjustedBy = UserDefaults.standard.double(forKey: "goalAdjustedBy")
+            let isPhoneReachable = WCSession.default.isReachable
+            
+            let btn1Amount = manager.isOunces ? 236.588 : 250.0
+            let btn1Label = manager.isOunces ? "+ 8 oz" : "+ 250 ml"
+            let btn2Amount = manager.isOunces ? 473.176 : 500.0
+            let btn2Label = manager.isOunces ? "+ 16 oz" : "+ 500 ml"
 
             ScrollView {
                 VStack(spacing: 10) {
@@ -24,25 +37,25 @@ struct WatchContentView: View {
                     // ── Level + streak ────────────────────────────────
                     HStack(alignment: .top) {
                         VStack(alignment: .leading, spacing: 2) {
-                            Text(HydrationMath.formatLabel(amount: current, isOunces: session.isOunces))
+                            Text(WatchMath.formatLabel(amount: current, isOunces: manager.isOunces))
                                 .font(.system(size: 24, weight: .bold, design: .rounded))
                                 .foregroundColor(.cyan)
                                 .contentTransition(.numericText())
-                            Text("of \(HydrationMath.formatLabel(amount: session.goalML, isOunces: session.isOunces))")
+                            Text("of \(WatchMath.formatLabel(amount: manager.dailyGoalML, isOunces: manager.isOunces))")
                                 .font(.caption2)
                                 .foregroundColor(.secondary)
                         }
                         Spacer()
                         VStack(alignment: .trailing, spacing: 1) {
-                            if session.streak > 0 {
-                                Text(StreakManager.flameEmoji(for: session.streak))
+                            if streak > 0 {
+                                Text(streak >= 7 ? "🔥" : "💧")
                                     .font(.system(size: 16))
-                                Text("\(session.streak)d")
+                                Text("\(streak)d")
                                     .font(.system(size: 10, weight: .bold))
                                     .foregroundColor(.orange)
                             }
                             // Sync indicator
-                            if !session.isPhoneReachable {
+                            if !isPhoneReachable {
                                 Image(systemName: "iphone.slash")
                                     .font(.system(size: 8))
                                     .foregroundColor(.secondary)
@@ -75,7 +88,7 @@ struct WatchContentView: View {
                         Circle()
                             .fill(mins < 30 ? Color.green : mins < 90 ? Color.yellow : Color.orange)
                             .frame(width: 5, height: 5)
-                        Text(timeSinceLabel(mins: mins))
+                        Text(mins < 60 ? "\(Int(mins))m ago" : "\(Int(mins)/60)h ago")
                             .font(.system(size: 9))
                             .foregroundColor(.secondary)
                         Image(systemName: "arrow.down")
@@ -85,17 +98,17 @@ struct WatchContentView: View {
                             .font(.system(size: 9))
                             .foregroundColor(.secondary)
                         Spacer()
-                        if session.goalAdjustedBy > 0 {
+                        if goalAdjustedBy > 0 {
                             Image(systemName: "thermometer.sun.fill")
                                 .font(.system(size: 10))
                                 .foregroundColor(.orange)
                         }
                     }
 
-                    // ── Log buttons (labels from phone settings) ──────
+                    // ── Log buttons ──────
                     HStack(spacing: 6) {
-                        Button(action: { session.logDrink(amountML: session.btn1Amount) }) {
-                            Text(session.btn1Label)
+                        Button(action: { manager.addDrink(amountML: btn1Amount) }) {
+                            Text(btn1Label)
                                 .font(.system(size: 13, weight: .bold))
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 8)
@@ -105,8 +118,8 @@ struct WatchContentView: View {
                         }
                         .buttonStyle(.plain)
 
-                        Button(action: { session.logDrink(amountML: session.btn2Amount) }) {
-                            Text(session.btn2Label)
+                        Button(action: { manager.addDrink(amountML: btn2Amount) }) {
+                            Text(btn2Label)
                                 .font(.system(size: 13, weight: .bold))
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 8)

@@ -1,145 +1,127 @@
-//
-//  SipWatchWidget.swift
-//  SipWatchWidget
-//
-
 import WidgetKit
 import SwiftUI
 
-// MARK: - Complication View
+// MARK: - 1. Data Model
+struct WatchHydrationEntry: TimelineEntry {
+    let date: Date
+    let currentML: Double
+    let lastDrink: Date
+    let goalML: Double
+    let isOunces: Bool
+}
 
+// MARK: - 2. Provider (Reads from Watch App Group)
+struct SipWatchProvider: TimelineProvider {
+    // 🌟 CORRECTED APP GROUP to match your project
+    let sharedDefaults = UserDefaults(suiteName: "group.org.mjbapps.sip")!
+    
+    func placeholder(in context: Context) -> WatchHydrationEntry {
+        WatchHydrationEntry(date: Date(), currentML: 1000, lastDrink: Date(), goalML: 2000, isOunces: false)
+    }
+
+    func getSnapshot(in context: Context, completion: @escaping (WatchHydrationEntry) -> Void) {
+        completion(createEntry(for: Date()))
+    }
+
+    func getTimeline(in context: Context, completion: @escaping (Timeline<WatchHydrationEntry>) -> Void) {
+        let currentDate = Date()
+        let entry = createEntry(for: currentDate)
+        
+        // Refresh every 15 minutes to keep the decay gauge accurate on the wrist
+        let nextUpdate = Calendar.current.date(byAdding: .minute, value: 15, to: currentDate)!
+        let timeline = Timeline(entries: [entry], policy: .after(nextUpdate))
+        completion(timeline)
+    }
+    
+    private func createEntry(for date: Date) -> WatchHydrationEntry {
+        let goal = sharedDefaults.double(forKey: "dailyGoalML")
+        return WatchHydrationEntry(
+            date: date,
+            currentML: sharedDefaults.double(forKey: "currentIntakeML"),
+            lastDrink: sharedDefaults.object(forKey: "lastDrinkTimestamp") as? Date ?? Date(),
+            goalML: goal > 0 ? goal : 2000,
+            isOunces: sharedDefaults.bool(forKey: "isOunces")
+        )
+    }
+}
+
+// MARK: - 3. Local Math Helper
+struct WidgetMath {
+    static func currentLevel(intake: Double, lastDrink: Date, now: Date) -> Double {
+        let hoursPassed = max(0, now.timeIntervalSince(lastDrink)) / 3600.0
+        let decay = hoursPassed * 60.0
+        return max(0, intake - decay)
+    }
+    
+    static func formatLabel(amount: Double, isOunces: Bool) -> String {
+        let displayAmount = isOunces ? (amount / 29.5735) : amount
+        let unit = isOunces ? "oz" : "ml"
+        return "\(Int(displayAmount)) \(unit)"
+    }
+}
+
+// MARK: - 4. Dead Simple UI
 struct SipComplicationView: View {
     var entry: WatchHydrationEntry
     @Environment(\.widgetFamily) var family
 
-    private var liveLevel: Double {
-        HydrationMath.currentLevel(intake: entry.currentML, lastDrink: entry.lastDrink, now: entry.date)
-    }
-    private var fillRatio: Double {
-        HydrationMath.fillRatio(current: liveLevel, goal: entry.goalML)
-    }
-
     var body: some View {
-        switch family {
+        let liveLevel = WidgetMath.currentLevel(intake: entry.currentML, lastDrink: entry.lastDrink, now: entry.date)
+        let fillRatio = min(1.0, max(0.0, liveLevel / entry.goalML))
+        
+        let isGoalMet = fillRatio >= 1.0
+        let themeColor: Color = isGoalMet ? .green : .cyan
+        let iconName = isGoalMet ? "checkmark.circle.fill" : "drop.fill"
 
-        // Circular — gauge arc with % in center
-        case .accessoryCircular:
+        switch family {
+            
+        // Small Circles (Corners & Dials)
+        case .accessoryCircular, .accessoryCorner:
             Gauge(value: fillRatio) {
-                Image(systemName: "drop.fill")
-                    .foregroundColor(fillRatio >= 1 ? .green : .cyan)
+                Image(systemName: iconName).foregroundColor(themeColor)
             } currentValueLabel: {
                 Text("\(Int(fillRatio * 100))%")
-                    .font(.system(size: 11, weight: .bold, design: .rounded))
-                    .foregroundColor(fillRatio >= 1 ? .green : .cyan)
             }
             .gaugeStyle(.accessoryCircular)
-            .tint(fillRatio >= 1 ? .green : .cyan)
+            .tint(themeColor)
 
-        // Corner — drop icon + linear gauge label
-        case .accessoryCorner:
-            Image(systemName: fillRatio >= 1 ? "checkmark.circle.fill" : "drop.fill")
-                .foregroundColor(fillRatio >= 1 ? .green : .cyan)
-                .widgetLabel {
-                    Gauge(value: fillRatio) { EmptyView() }
-                        .gaugeStyle(.accessoryLinear)
-                        .tint(fillRatio >= 1 ? .green : .cyan)
-                }
-
-        // Rectangular — mirrors TodayDashboardCard layout
-        // Level (large) | progress bar | streak | decay | adaptive
+        // Smart Stack (Rectangular)
         case .accessoryRectangular:
-            VStack(alignment: .leading, spacing: 4) {
-
-                // Row 1: level + streak
-                HStack(alignment: .firstTextBaseline) {
-                    Text(HydrationMath.formatLabel(amount: liveLevel, isOunces: entry.isOunces))
-                        .font(.system(size: 16, weight: .bold, design: .rounded))
-                        .foregroundColor(.cyan)
-                    Text("of \(HydrationMath.formatLabel(amount: entry.goalML, isOunces: entry.isOunces))")
-                        .font(.system(size: 10))
-                        .foregroundColor(.secondary)
-                    Spacer()
-                    if entry.streak > 0 {
-                        HStack(spacing: 2) {
-                            Text(StreakManager.flameEmoji(for: entry.streak))
-                                .font(.system(size: 10))
-                            Text("\(entry.streak)d")
-                                .font(.system(size: 10, weight: .bold))
-                                .foregroundColor(.orange)
-                        }
-                    }
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Hydration").font(.headline).foregroundColor(themeColor)
+                    Text(WidgetMath.formatLabel(amount: liveLevel, isOunces: entry.isOunces))
+                        .font(.title3.bold().monospacedDigit())
                 }
-
-                // Row 2: progress bar with %
-                GeometryReader { geo in
-                    ZStack(alignment: .leading) {
-                        Capsule().fill(Color.cyan.opacity(0.2))
-                        Capsule()
-                            .fill(LinearGradient(
-                                colors: fillRatio >= 1
-                                    ? [.green, .green]
-                                    : [.blue, .cyan],
-                                startPoint: .leading, endPoint: .trailing))
-                            .frame(width: max(0, geo.size.width * fillRatio))
-                        if fillRatio > 0.15 {
-                            Text("\(Int(fillRatio * 100))%")
-                                .font(.system(size: 8, weight: .bold))
-                                .foregroundColor(.white)
-                                .padding(.leading, 5)
-                        }
-                    }
+                Spacer()
+                Gauge(value: fillRatio) {
+                    Image(systemName: iconName).foregroundColor(themeColor)
                 }
-                .frame(height: 12)
-
-                // Row 3: decay + adaptive goal
-                HStack(spacing: 6) {
-                    let mins = entry.date.timeIntervalSince(entry.lastDrink) / 60
-                    Circle()
-                        .fill(mins < 30 ? Color.green : mins < 90 ? Color.yellow : Color.orange)
-                        .frame(width: 5, height: 5)
-                    Text(timeSinceLabel(mins: mins))
-                        .font(.system(size: 9))
-                        .foregroundColor(.secondary)
-                    if entry.goalAdjustedBy > 0 {
-                        Image(systemName: "thermometer.sun.fill")
-                            .font(.system(size: 9))
-                            .foregroundColor(.orange)
-                        Text("+\(HydrationMath.formatLabel(amount: entry.goalAdjustedBy, isOunces: entry.isOunces))")
-                            .font(.system(size: 9))
-                            .foregroundColor(.orange)
-                    }
-                }
+                .gaugeStyle(.accessoryCircular)
+                .tint(themeColor)
             }
-            .padding(.horizontal, 2)
 
-        // Inline — compact text
+        // Inline Text (Top of watch face)
         case .accessoryInline:
-            if fillRatio >= 1 {
-                Label("Goal hit!", systemImage: "checkmark.circle.fill")
-            } else {
-                Label(
-                    "\(HydrationMath.formatLabel(amount: liveLevel, isOunces: entry.isOunces)) · \(Int(fillRatio * 100))%",
-                    systemImage: "drop.fill"
-                )
-            }
+            Label("\(WidgetMath.formatLabel(amount: liveLevel, isOunces: entry.isOunces))", systemImage: iconName)
+                .foregroundColor(themeColor)
 
         default:
-            Image(systemName: "drop.fill").foregroundColor(.cyan)
+            Image(systemName: iconName).foregroundColor(themeColor)
         }
     }
 }
 
-// MARK: - Widget
-
+// MARK: - 5. Configuration
+// (Ensure your SipWatchWidgetBundle.swift is still pointing to 'SipWatchComplication')
 struct SipWatchComplication: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: "SipWatchComplication", provider: SipWatchProvider()) { entry in
             SipComplicationView(entry: entry)
-                // No black background — let the watch face control it
                 .containerBackground(for: .widget) { Color.clear }
         }
-        .configurationDisplayName("Sip")
-        .description("Live hydration level")
+        .configurationDisplayName("Sip Tracker")
+        .description("A live hydration gauge.")
         .supportedFamilies([
             .accessoryCircular,
             .accessoryCorner,
