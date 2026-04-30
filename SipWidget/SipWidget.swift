@@ -353,26 +353,41 @@ struct IPhoneLockScreenContent: View {
                 }
                 .frame(width: 80, alignment: .leading)
  
-                GeometryReader { proxy in
-                    ZStack(alignment: .leading) {
-                        Capsule().fill(Color.blue.opacity(0.15))
-                        Capsule()
-                            .fill(LinearGradient(
-                                colors: [.blue.opacity(0.75), .blue],
-                                startPoint: .leading, endPoint: .trailing))
-                            .frame(width: max(0, proxy.size.width * fill))
-                            .animation(.spring(response: 0.45), value: fill)
-                        if fill > 0.1 {
-                            Text("\(Int(fill * 100))%")
-                                .font(.system(size: 11, weight: .bold))
-                                .foregroundColor(.white)
-                                .padding(.leading, 8)
+                VStack(alignment: .leading, spacing: 4) {
+                    GeometryReader { proxy in
+                        ZStack(alignment: .leading) {
+                            Capsule().fill(Color.blue.opacity(0.15))
+                            Capsule()
+                                .fill(LinearGradient(
+                                    colors: [.blue.opacity(0.75), .blue],
+                                    startPoint: .leading, endPoint: .trailing))
+                                .frame(width: max(0, proxy.size.width * fill))
+                                .animation(.spring(response: 0.45), value: fill)
+                            if fill > 0.1 {
+                                Text("\(Int(fill * 100))%")
+                                    .font(.system(size: 11, weight: .bold))
+                                    .foregroundColor(.white)
+                                    .padding(.leading, 8)
+                            }
                         }
-                    
+                    }
+                    .frame(height: 10)
+
+                    // Now naturally left-aligned under the bar
+                    HStack(spacing: 10) {
+                        HStack(spacing: 3) {
+                            Image(systemName: "clock").font(.system(size: 9))
+                            Text(timeSinceLabel(mins: mins)).font(.system(size: 11))
+                        }
+                        .foregroundColor(mins > 90 ? .orange : .secondary)
+                        HStack(spacing: 3) {
+                            Image(systemName: "arrow.down").font(.system(size: 9))
+                            Text("−1 ml/min").font(.system(size: 11))
+                        }
+                        .foregroundColor(.secondary)
+                        Spacer()
                     }
                 }
-                
-                .frame(height: 10)
  
                 VStack(alignment: .trailing, spacing: 2) {
                     if context.state.streak > 0 {
@@ -387,22 +402,7 @@ struct IPhoneLockScreenContent: View {
                 }
                 .frame(width: 36, alignment: .trailing)
             }
- 
-            // Row 2: time since + drain
-            HStack(spacing: 12) {
-                HStack(spacing: 3) {
-                    Image(systemName: "clock").font(.system(size: 9))
-                    Text(timeSinceLabel(mins: mins)).font(.system(size: 11))
-                }
-                .foregroundColor(mins > 90 ? .orange : .secondary)
-                HStack(spacing: 3) {
-                    Image(systemName: "arrow.down").font(.system(size: 9))
-                    Text("−1 ml/min").font(.system(size: 11))
-                }
-                .foregroundColor(.secondary)
-                Spacer()
-            }
-            .padding(.leading, 90)
+
  
             // Row 3: 3 log buttons
             HStack(spacing: 8) {

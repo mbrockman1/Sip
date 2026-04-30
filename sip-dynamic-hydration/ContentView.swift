@@ -175,12 +175,14 @@ struct TodayDashboardCard: View {
     }
  
     var body: some View {
-        TimelineView(.periodic(from: manager.lastDrinkTimestamp, by: 30)) { context in
+        TimelineView(.periodic(from: manager.lastDrinkTimestamp, by: 60)) { context in
             let current = HydrationMath.currentLevel(
                 intake: manager.currentIntakeML,
                 lastDrink: manager.lastDrinkTimestamp,
                 now: context.date
             )
+            let target = manager.todayGoalML
+            
             let fillRatio = HydrationMath.fillRatio(current: current, goal: manager.dailyGoalML)
             let minsSince = context.date.timeIntervalSince(manager.lastDrinkTimestamp) / 60
  

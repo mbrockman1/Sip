@@ -12,6 +12,8 @@ import SwiftUI
 struct SettingsView: View {
     @EnvironmentObject var manager: HydrationManager
     @AppStorage("hasSeenOnboarding") var hasSeenOnboarding: Bool = true
+    
+    @State private var manualInput: String = ""
 
     var body: some View {
         NavigationView {
@@ -20,11 +22,39 @@ struct SettingsView: View {
                 // ── Goal ──────────────────────────────────────────────
                 Section(header: Text("Hydration Goal")) {
                     Toggle("Use Ounces (oz)", isOn: $manager.isOunces)
+                    
+                    let displayGoal = manager.isOunces ? (manager.baseGoalML / 29.5735) : manager.baseGoalML
+                    let stepAmount: Double = manager.isOunces ? 1.0 : 10.0 // 1 oz or 10ml steps
 
-                    Stepper(
-                        "Base Goal: \(HydrationMath.formatLabel(amount: manager.baseGoalML, isOunces: manager.isOunces))",
-                        value: $manager.baseGoalML, in: 500...5000, step: 250
-                    )
+                    Stepper("Base Goal: \(Int(displayGoal)) \(manager.isOunces ? "oz" : "ml")",
+                            value: Binding(
+                                get: { displayGoal },
+                                set: { newValue in
+                                    manager.baseGoalML = manager.isOunces ? (newValue * 29.5735) : newValue
+                                }
+                            ),
+                            in: (manager.isOunces ? 32.0 : 500.0)...(manager.isOunces ? 250.0 : 7500.0),
+                            step: stepAmount)
+                    
+                    // 2. Manual Override (For exact numbers)
+                    HStack {
+                        TextField("Enter Custom Goal", text: $manualInput)
+                            .keyboardType(.numberPad)
+                        Button("Apply") {
+                            if let val = Double(manualInput) {
+                                // Save the base goal
+                                manager.baseGoalML = manager.isOunces ? (val * 29.5735296) : val
+                                
+                                // 🌟 FORCE the adaptive engine to re-calculate based on the new base
+                                if manager.useAdaptiveGoals {
+                                    Task { await manager.refreshAdaptiveGoal(force: true) }
+                                }
+                                
+                                manualInput = ""
+                                hideKeyboard()
+                            }
+                        }
+                    }
                     .onChange(of: manager.baseGoalML) { _, newVal in
                         if !manager.useAdaptiveGoals { manager.dailyGoalML = newVal }
                     }
@@ -132,5 +162,11 @@ struct SettingsView: View {
             }
             .navigationTitle("Settings")
         }
+    }
+}
+
+extension View {
+    func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }

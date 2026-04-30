@@ -7,6 +7,10 @@
 		<dict>
 			<key>CFBundleURLName</key>
 			<string>sipwatch</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>sipwatch</string>
+			</array>
 		</dict>
 	</array>
 </dict>
