@@ -32,106 +32,109 @@ struct WatchContentView: View {
             let btn2Label = WatchMath.formatLabel(amount: btn2Amount, isOunces: manager.isOunces)
 
             ScrollView {
-                VStack(spacing: 10) {
+                            VStack(spacing: 12) {
 
-                    // ── Level + streak ────────────────────────────────
-                    HStack(alignment: .top) {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(WatchMath.formatLabel(amount: current, isOunces: manager.isOunces))
-                                .font(.system(size: 24, weight: .bold, design: .rounded))
-                                .foregroundColor(.cyan)
-                                .contentTransition(.numericText())
-                            Text("of \(WatchMath.formatLabel(amount: manager.dailyGoalML, isOunces: manager.isOunces))")
-                                .font(.caption2)
-                                .foregroundColor(.secondary)
-                        }
-                        Spacer()
-                        VStack(alignment: .trailing, spacing: 1) {
-                            if streak > 0 {
-                                Text(streak >= 7 ? "🔥" : "💧")
-                                    .font(.system(size: 16))
-                                Text("\(streak)d")
-                                    .font(.system(size: 10, weight: .bold))
-                                    .foregroundColor(.orange)
+                                // ── Level + Decay + Streak ────────────────────────
+                                HStack(alignment: .top) {
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        // Main Live Level
+                                        Text(WatchMath.formatLabel(amount: current, isOunces: manager.isOunces))
+                                            .font(.system(size: 24, weight: .bold, design: .rounded))
+                                            .foregroundColor(.cyan)
+                                            .contentTransition(.numericText())
+                                        
+                                        // 🌟 MOVED: Goal, Decay, and Adaptive info are now neatly packed here
+                                        HStack(spacing: 4) {
+                                            Text("of \(WatchMath.formatLabel(amount: manager.dailyGoalML, isOunces: manager.isOunces))")
+                                                .font(.caption2)
+                                                .foregroundColor(.secondary)
+                                            
+                                            Circle()
+                                                .fill(mins < 30 ? Color.green : mins < 90 ? Color.yellow : Color.orange)
+                                                .frame(width: 4, height: 4)
+                                                .padding(.leading, 2)
+                                            
+                                            Text(mins < 60 ? "\(Int(mins))m" : "\(Int(mins)/60)h")
+                                                .font(.system(size: 9))
+                                                .foregroundColor(.secondary)
+                                            
+                                            Image(systemName: "arrow.down")
+                                                .font(.system(size: 7))
+                                                .foregroundColor(.cyan.opacity(0.6))
+                                            
+                                            if goalAdjustedBy > 0 {
+                                                Image(systemName: "thermometer.sun.fill")
+                                                    .font(.system(size: 9))
+                                                    .foregroundColor(.orange)
+                                            }
+                                        }
+                                    }
+                                    Spacer(minLength: 4)
+                                    
+                                    // Streak & Sync info
+                                    VStack(alignment: .trailing, spacing: 1) {
+                                        if streak > 0 {
+                                            Text(streak >= 7 ? "🔥" : "💧")
+                                                .font(.system(size: 16))
+                                            Text("\(streak)d")
+                                                .font(.system(size: 10, weight: .bold))
+                                                .foregroundColor(.orange)
+                                        }
+                                        if !isPhoneReachable {
+                                            Image(systemName: "iphone.slash")
+                                                .font(.system(size: 8))
+                                                .foregroundColor(.secondary)
+                                        }
+                                    }
+                                }
+
+                                // ── Progress bar with % ───────────────────────────
+                                GeometryReader { geo in
+                                    ZStack(alignment: .leading) {
+                                        Capsule().fill(Color.cyan.opacity(0.15))
+                                        Capsule()
+                                            .fill(LinearGradient(
+                                                colors: fill >= 1 ? [.green, .green] : [.blue, .cyan],
+                                                startPoint: .leading, endPoint: .trailing))
+                                            .frame(width: max(0, geo.size.width * fill))
+                                            .animation(.spring(response: 0.5), value: fill)
+                                        if fill > 0.12 {
+                                            Text("\(Int(fill * 100))%")
+                                                .font(.system(size: 9, weight: .bold))
+                                                .foregroundColor(.white)
+                                                .padding(.leading, 6)
+                                        }
+                                    }
+                                }
+                                .frame(height: 16)
+
+                                // ── Log buttons ──────
+                                HStack(spacing: 6) {
+                                    Button(action: { manager.addDrink(amountML: btn1Amount) }) {
+                                        Text(btn1Label)
+                                            .font(.system(size: 13, weight: .bold))
+                                            .frame(maxWidth: .infinity)
+                                            .padding(.vertical, 8)
+                                            .background(Color.cyan.opacity(0.15))
+                                            .foregroundColor(.cyan)
+                                            .cornerRadius(10)
+                                    }
+                                    .buttonStyle(.plain)
+
+                                    Button(action: { manager.addDrink(amountML: btn2Amount) }) {
+                                        Text(btn2Label)
+                                            .font(.system(size: 13, weight: .bold))
+                                            .frame(maxWidth: .infinity)
+                                            .padding(.vertical, 8)
+                                            .background(Color.cyan.opacity(0.28))
+                                            .foregroundColor(.cyan)
+                                            .cornerRadius(10)
+                                    }
+                                    .buttonStyle(.plain)
+                                }
                             }
-                            // Sync indicator
-                            if !isPhoneReachable {
-                                Image(systemName: "iphone.slash")
-                                    .font(.system(size: 8))
-                                    .foregroundColor(.secondary)
-                            }
+                            .padding(8)
                         }
-                    }
-
-                    // ── Progress bar with % ───────────────────────────
-                    GeometryReader { geo in
-                        ZStack(alignment: .leading) {
-                            Capsule().fill(Color.cyan.opacity(0.15))
-                            Capsule()
-                                .fill(LinearGradient(
-                                    colors: fill >= 1 ? [.green, .green] : [.blue, .cyan],
-                                    startPoint: .leading, endPoint: .trailing))
-                                .frame(width: max(0, geo.size.width * fill))
-                                .animation(.spring(response: 0.5), value: fill)
-                            if fill > 0.12 {
-                                Text("\(Int(fill * 100))%")
-                                    .font(.system(size: 9, weight: .bold))
-                                    .foregroundColor(.white)
-                                    .padding(.leading, 6)
-                            }
-                        }
-                    }
-                    .frame(height: 16)
-
-                    // ── Decay + adaptive ──────────────────────────────
-                    HStack(spacing: 6) {
-                        Circle()
-                            .fill(mins < 30 ? Color.green : mins < 90 ? Color.yellow : Color.orange)
-                            .frame(width: 5, height: 5)
-                        Text(mins < 60 ? "\(Int(mins))m ago" : "\(Int(mins)/60)h ago")
-                            .font(.system(size: 9))
-                            .foregroundColor(.secondary)
-                        Image(systemName: "arrow.down")
-                            .font(.system(size: 7))
-                            .foregroundColor(.cyan.opacity(0.6))
-                        Text("−1 ml/min")
-                            .font(.system(size: 9))
-                            .foregroundColor(.secondary)
-                        Spacer()
-                        if goalAdjustedBy > 0 {
-                            Image(systemName: "thermometer.sun.fill")
-                                .font(.system(size: 10))
-                                .foregroundColor(.orange)
-                        }
-                    }
-
-                    // ── Log buttons ──────
-                    HStack(spacing: 6) {
-                        Button(action: { manager.addDrink(amountML: btn1Amount) }) {
-                            Text(btn1Label)
-                                .font(.system(size: 13, weight: .bold))
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 8)
-                                .background(Color.cyan.opacity(0.15))
-                                .foregroundColor(.cyan)
-                                .cornerRadius(10)
-                        }
-                        .buttonStyle(.plain)
-
-                        Button(action: { manager.addDrink(amountML: btn2Amount) }) {
-                            Text(btn2Label)
-                                .font(.system(size: 13, weight: .bold))
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 8)
-                                .background(Color.cyan.opacity(0.28))
-                                .foregroundColor(.cyan)
-                                .cornerRadius(10)
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-                .padding(8)
-            }
         }
     }
 }

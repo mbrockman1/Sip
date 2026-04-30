@@ -155,8 +155,8 @@ struct ExpandedLeadingView: View {
                 lastDrink: context.state.lastDrinkTimestamp,
                 now: tl.date)
             let fill = HydrationMath.fillRatio(current: current, goal: context.state.dailyGoal)
- 
-            HStack(spacing: 5) {
+            
+            HStack(spacing: 8) { // Increased spacing slightly for separation
                 // Compact liquid tube
                 ZStack(alignment: .bottom) {
                     RoundedRectangle(cornerRadius: 3)
@@ -167,6 +167,7 @@ struct ExpandedLeadingView: View {
                         .frame(width: 7, height: max(3, 28 * fill))
                 }
  
+                // App Title & Streak
                 VStack(alignment: .leading, spacing: 1) {
                     Text("Sip").font(.caption.bold())
                     if context.state.streak > 0 {
@@ -175,11 +176,23 @@ struct ExpandedLeadingView: View {
                             .foregroundColor(.orange)
                     }
                 }
+                
+                // 🌟 MOVED: Live Status & Goal
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(HydrationMath.formatLabel(amount: current, isOunces: context.state.isOunces))
+                        .font(.caption.bold().monospacedDigit())
+                        .foregroundStyle(.blue)
+                    
+                    Text("of \(HydrationMath.formatLabel(amount: context.state.dailyGoal, isOunces: context.state.isOunces))")
+                        .font(.system(size: 9))
+                        .foregroundColor(.secondary)
+                }
             }
             .padding(.leading, 4)
         }
     }
 }
+
 
 // MARK: - Expanded: Trailing
  
@@ -188,23 +201,17 @@ struct ExpandedTrailingView: View {
  
     var body: some View {
         TimelineView(.periodic(from: context.state.lastDrinkTimestamp, by: 60)) { tl in
-            let current = HydrationMath.currentLevel(
-                intake: context.state.currentIntake,
-                lastDrink: context.state.lastDrinkTimestamp,
-                now: tl.date)
             let mins = tl.date.timeIntervalSince(context.state.lastDrinkTimestamp) / 60
  
-            VStack(alignment: .trailing, spacing: 2) {
-                Text(HydrationMath.formatLabel(amount: current, isOunces: context.state.isOunces))
-                    .font(.caption.bold().monospacedDigit())
-                    .foregroundStyle(.blue)
- 
+            VStack(alignment: .trailing, spacing: 4) {
+                // Time since last drink
                 HStack(spacing: 2) {
                     Image(systemName: "clock").font(.system(size: 7))
                     Text(timeSinceLabel(mins: mins)).font(.system(size: 9))
                 }
                 .foregroundColor(.secondary)
  
+                // Adaptive Goal Indicator
                 if context.state.goalAdjustedBy > 0 {
                     Image(systemName: "thermometer.sun.fill")
                         .font(.system(size: 9))
@@ -215,11 +222,11 @@ struct ExpandedTrailingView: View {
         }
     }
 }
-
 // MARK: - Expanded: Bottom (3 buttons from App Group, compact sizing)
  
 struct ExpandedBottomView: View {
     let context: ActivityViewContext<HydrationAttributes>
+    
  
     var body: some View {
         TimelineView(.periodic(from: context.state.lastDrinkTimestamp, by: 60)) { tl in
@@ -229,6 +236,15 @@ struct ExpandedBottomView: View {
                 now: tl.date)
             let fill = HydrationMath.fillRatio(current: current, goal: context.state.dailyGoal)
             let btns = readLogButtons(isOunces: context.state.isOunces)
+            
+            let amount1 = context.state.btnLive1
+            let label1 = HydrationMath.formatLabel(amount: amount1, isOunces: context.state.isOunces)
+            
+            let amount2 = context.state.btnLive2
+            let label2 = HydrationMath.formatLabel(amount: amount2, isOunces: context.state.isOunces)
+            
+            let amount3 = context.state.btnLive3
+            let label3 = HydrationMath.formatLabel(amount: amount3, isOunces: context.state.isOunces)
  
             VStack(spacing: 8) {
                 // Progress bar with % — slim
@@ -253,19 +269,37 @@ struct ExpandedBottomView: View {
  
                 // 3 log buttons — fixed small sizing, won't overflow
                 HStack(spacing: 6) {
-                    ForEach(0..<btns.count, id: \.self) { i in
-                        Button(intent: LogWaterIntent(amount: btns[i].amount)) {
-                            Text(btns[i].label)
-                                .font(.system(size: 11, weight: .bold))
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.7)
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 7)
-                                .background(Color.blue.opacity(i == 2 ? 0.35 : 0.18))
-                                .foregroundColor(.blue)
-                                .cornerRadius(8)
-                        }
+                    Button(intent: LogWaterIntent(amount: amount1)) {
+                        Text(label1)
+                            .font(.system(size: 11, weight: .bold))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.7)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 7)
+                            .foregroundColor(.blue)
+                            .cornerRadius(8)
                     }
+                    Button(intent: LogWaterIntent(amount: amount2)) {
+                        Text(label2)
+                            .font(.system(size: 11, weight: .bold))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.7)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 7)
+                            .foregroundColor(.blue)
+                            .cornerRadius(8)
+                    }
+                    Button(intent: LogWaterIntent(amount: amount3)) {
+                        Text(label3)
+                            .font(.system(size: 11, weight: .bold))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.7)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 7)
+                            .foregroundColor(.blue)
+                            .cornerRadius(8)
+                    }
+                    
                 }
             }
             .padding(.horizontal, 4)
@@ -309,12 +343,6 @@ struct LockScreenView: View {
             let mins = tl.date.timeIntervalSince(context.state.lastDrinkTimestamp) / 60
             let btns = readLogButtons(isOunces: context.state.isOunces)
             
-            let amount1 = context.state.btnLive1
-            let label1 = HydrationMath.formatLabel(amount: amount1, isOunces: context.state.isOunces)
-            let amount2 = context.state.btnLive2
-            let label2 = HydrationMath.formatLabel(amount: amount2, isOunces: context.state.isOunces)
-            let amount3 = context.state.btnLive3
-            let labe3 = HydrationMath.formatLabel(amount: amount3, isOunces: context.state.isOunces)
  
             // Branch: Watch Smart Stack gets its own compact layout
             if activityFamily == .small {
@@ -344,8 +372,16 @@ struct IPhoneLockScreenContent: View {
     let fill: Double
     let mins: Double
     let btns: [(amount: Double, label: String)]
- 
+    
+
     var body: some View {
+        let amount1 = context.state.btnLive1
+        let label1 = HydrationMath.formatLabel(amount: amount1, isOunces: context.state.isOunces)
+        let amount2 = context.state.btnLive2
+        let label2 = HydrationMath.formatLabel(amount: amount2, isOunces: context.state.isOunces)
+        let amount3 = context.state.btnLive3
+        let label3 = HydrationMath.formatLabel(amount: amount3, isOunces: context.state.isOunces)
+     
         VStack() {
             // Row 1: number | progress bar | streak
             
@@ -413,17 +449,32 @@ struct IPhoneLockScreenContent: View {
  
             // Row 3: 3 log buttons
             HStack(spacing: 8) {
-                ForEach(0..<btns.count, id: \.self) { i in
-                    Button(intent: LogWaterIntent(amount: btns[i].amount)) {
-                        Text(btns[i].label)
-                            .font(.system(size: 13, weight: .bold))
-                            .lineLimit(1).minimumScaleFactor(0.75)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 9)
-                            .background(i == 2 ? Color.blue.opacity(0.28) : Color.blue.opacity(0.12))
-                            .foregroundColor(.blue)
-                            .cornerRadius(10)
-                    }
+                Button(intent: LogWaterIntent(amount: amount1)) {
+                    Text(label1)
+                        .font(.system(size: 13, weight: .bold))
+                        .lineLimit(1).minimumScaleFactor(0.75)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 9)
+                        .foregroundColor(.blue)
+                        .cornerRadius(10)
+                }
+                Button(intent: LogWaterIntent(amount: amount2)) {
+                    Text(label2)
+                        .font(.system(size: 13, weight: .bold))
+                        .lineLimit(1).minimumScaleFactor(0.75)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 9)
+                        .foregroundColor(.blue)
+                        .cornerRadius(10)
+                }
+                Button(intent: LogWaterIntent(amount: amount3)) {
+                    Text(label3)
+                        .font(.system(size: 13, weight: .bold))
+                        .lineLimit(1).minimumScaleFactor(0.75)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 9)
+                        .foregroundColor(.blue)
+                        .cornerRadius(10)
                 }
             }
         }

@@ -50,10 +50,10 @@ struct SipTabView: View {
 struct SipMainTab: View {
     @EnvironmentObject var manager: HydrationManager
 
-    /// True if the goal was hit today
     private var isGoalHitToday: Bool {
         guard let goalHitDate = Constants.defaults.object(forKey: "goalHitDate") as? Date else { return false }
-        return Calendar.current.isDateInToday(goalHitDate)
+        // Only show if goal hit AND the user hasn't manually dismissed it
+        return Calendar.current.isDateInToday(goalHitDate) && !manager.hasDismissedGoalScreen
     }
 
     var body: some View {
@@ -314,44 +314,65 @@ struct DecayIndicatorView: View {
 
 struct LogButtonRow: View {
     @EnvironmentObject var manager: HydrationManager
-    @State private var showCustomSheet = false
-    @State private var longPressedSlot: Int = 1
-
+    
     var body: some View {
-        let buttons = manager.logButtons
-        HStack(spacing: 10) {
-            ForEach(0..<buttons.count, id: \.self) { i in
-                let btn = buttons[i]
-                Button(action: { manager.addDrink(amountML: btn.amount) }) {
-                    Text(btn.label)
-                        .font(i == 2 ? .headline.bold() : .subheadline.bold())
+        // Prepare the button data
+        let btn1Amount = manager.btnApp1
+        let btn1Label = HydrationMath.formatLabel(amount: btn1Amount, isOunces: manager.isOunces)
+        
+        let btn2Amount = manager.btnApp2
+        let btn2Label = HydrationMath.formatLabel(amount: btn2Amount, isOunces: manager.isOunces)
+        
+        let btn3Amount = manager.btnApp3 // Ensure btnApp3 is defined in HydrationManager
+        let btn3Label = HydrationMath.formatLabel(amount: btn3Amount, isOunces: manager.isOunces)
+        
+        VStack(spacing: 12) {
+            HStack(spacing: 10) {
+                // Button 1 (Smallest)
+                Button(action: { manager.addDrink(amountML: btn1Amount) }) {
+                    Text(btn1Label)
+                        .font(.subheadline.bold())
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
-                        .background(i == 2 ? Color.cyan : i == 1 ? Color.cyan.opacity(0.18) : Color.cyan.opacity(0.09))
-                        .foregroundColor(i == 2 ? .white : .cyan)
+                        .background(Color.cyan.opacity(0.09))
+                        .foregroundColor(.cyan)
                         .cornerRadius(14)
-                    
-                
                 }
-                .simultaneousGesture(
-                    LongPressGesture(minimumDuration: 0.5).onEnded { _ in
-                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                        longPressedSlot = i
-                        showCustomSheet = true
-                    }
-                )  
+                .buttonStyle(.plain)
+                
+                // Button 2 (Medium)
+                Button(action: { manager.addDrink(amountML: btn2Amount) }) {
+                    Text(btn2Label)
+                        .font(.subheadline.bold())
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(Color.cyan.opacity(0.18))
+                        .foregroundColor(.cyan)
+                        .cornerRadius(14)
+                }
+                .buttonStyle(.plain)
+                
+                // Button 3 (Largest/Prominent)
+                Button(action: { manager.addDrink(amountML: btn3Amount) }) {
+                    Text(btn3Label)
+                        .font(.headline.bold())
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(Color.cyan)
+                        .foregroundColor(.white)
+                        .cornerRadius(14)
+                }
+                .buttonStyle(.plain)
             }
+            
             if !manager.todaysSamples.isEmpty {
                 Button(action: { manager.undoLastDrink() }) {
                     Label("Undo Last Drink", systemImage: "arrow.uturn.backward.circle")
                         .font(.footnote.bold())
                         .foregroundColor(.secondary)
                 }
-                .padding(.top, 8)
+                .padding(.top, 4)
             }
-        }
-        .sheet(isPresented: $showCustomSheet) {
-            CustomSipSheet(slot: longPressedSlot).environmentObject(manager)
         }
     }
 }

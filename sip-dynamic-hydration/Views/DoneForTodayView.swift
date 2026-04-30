@@ -12,6 +12,8 @@ struct DoneForTodayView: View {
     @EnvironmentObject var manager: HydrationManager
     @State private var showHistory = false
     @State private var pulse = false
+    
+    @Environment(\.dismiss) var dismiss // 🌟 Added to dismiss this view
 
     /// Time until midnight
     private var timeUntilMidnight: String {
@@ -133,13 +135,22 @@ struct DoneForTodayView: View {
                                 .background(Color.cyan.opacity(0.10))
                                 .cornerRadius(14)
                         }
+                        
+                        Button(action: {
+                            manager.hasDismissedGoalScreen = true
+                            dismiss()
+                        }) {
+                            Text("Return to Dashboard")
+                                .font(.subheadline.bold())
+                                .foregroundColor(.secondary)
+                                .padding(.vertical, 10)
+                        }
 
                         Spacer().frame(height: 8)
                     }
                     .padding(.horizontal, 20)
                 }
             }
-            .navigationTitle("Today")
             .navigationBarTitleDisplayMode(.inline)
             .sheet(isPresented: $showHistory) {
                 HistoryOnlyView().environmentObject(manager)

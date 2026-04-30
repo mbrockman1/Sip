@@ -7,6 +7,7 @@ import WeatherKit
 import CoreLocation
 import WatchConnectivity
 import WidgetKit
+import Foundation
 
 struct DailyIntake: Identifiable {
     let id = UUID()
@@ -112,7 +113,7 @@ class HydrationManager: NSObject, ObservableObject, WCSessionDelegate {
     private let waterType = HKQuantityType.quantityType(forIdentifier: .dietaryWater)!
     private let energyType = HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned)!
     private let workoutType = HKObjectType.workoutType()
-    private let locationManager = CLLocationManager()
+    private let locationHelper = LocationManager()
     
     
     // Button array
@@ -132,6 +133,10 @@ class HydrationManager: NSObject, ObservableObject, WCSessionDelegate {
     
     @Published var btnWatch1: Double = 236.588 { didSet { Constants.defaults.set(btnWatch1, forKey: "btnWatch1"); pushStateToWatch() } }
     @Published var btnWatch2: Double = 473.176 { didSet { Constants.defaults.set(btnWatch2, forKey: "btnWatch2"); pushStateToWatch() } }
+    
+    @Published var hasDismissedGoalScreen: Bool = false {
+        didSet { Constants.defaults.set(hasDismissedGoalScreen, forKey: "hasDismissedGoalScreen") }
+    }
 
     override init() {
         super.init()
@@ -422,6 +427,7 @@ class HydrationManager: NSObject, ObservableObject, WCSessionDelegate {
                 }
             }
             ensureActivityRunning()
+            self.hasDismissedGoalScreen = false
         }
         currentStreak = StreakManager.computeStreak()
         refreshDailySummary()
@@ -496,10 +502,24 @@ class HydrationManager: NSObject, ObservableObject, WCSessionDelegate {
     }
 
     private func fetchWeatherBump() async -> (ml: Double, reason: String)? {
-        guard CLLocationManager.locationServicesEnabled() else { return nil }
-        let auth = locationManager.authorizationStatus
-        guard auth == .authorizedWhenInUse || auth == .authorizedAlways else { locationManager.requestWhenInUseAuthorization(); return nil }
-        let location = locationManager.location ?? CLLocation(latitude: 37.7749, longitude: -122.4194)
+        // We check the status instantly without blocking
+        let auth = locationHelper.authorizationStatus
+        
+        // If not authorized, just return the fallback San Francisco weather (no blocking!)
+        guard auth == .authorizedWhenInUse || auth == .authorizedAlways else {
+            return await fetchWeatherForLocation(CLLocation(latitude: 37.7749, longitude: -122.4194))
+        }
+        
+        // Get location safely
+        if let location = locationHelper.getCurrentLocation() {
+            return await fetchWeatherForLocation(location)
+        } else {
+            // Fallback if permission is granted but location isn't ready yet
+            return await fetchWeatherForLocation(CLLocation(latitude: 37.7749, longitude: -122.4194))
+        }
+    }
+    
+    private func fetchWeatherForLocation(_ location: CLLocation) async -> (ml: Double, reason: String)? {
         do {
             let weather = try await WeatherService.shared.weather(for: location)
             let tempC = weather.currentWeather.temperature.converted(to: .celsius).value
@@ -524,4 +544,31 @@ class HydrationManager: NSObject, ObservableObject, WCSessionDelegate {
     }
 
     func dismissMilestoneBadge() { milestoneBadge = nil }
+}
+
+class LocationManager: NSObject, CLLocationManagerDelegate, ObservableObject {
+    private let manager = CLLocationManager()
+    @Published var authorizationStatus: CLAuthorizationStatus = .notDetermined
+
+    override init() {
+        super.init()
+        manager.delegate = self
+        self.authorizationStatus = manager.authorizationStatus
+    }
+
+    func requestAuthorization() {
+        manager.requestWhenInUseAuthorization()
+    }
+
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        self.authorizationStatus = manager.authorizationStatus
+    }
+
+    func getCurrentLocation() -> CLLocation? {
+        // Only return location if we have permission
+        if authorizationStatus == .authorizedWhenInUse || authorizationStatus == .authorizedAlways {
+            return manager.location
+        }
+        return nil
+    }
 }

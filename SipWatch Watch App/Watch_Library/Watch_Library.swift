@@ -92,7 +92,9 @@ class WatchManager: NSObject, ObservableObject, WCSessionDelegate {
         } else {
             // Fallback if iPhone is out of range
             let sample = HKQuantitySample(type: waterType, quantity: HKQuantity(unit: HKUnit.literUnit(with: .milli), doubleValue: amountML), start: Date(), end: Date())
-            healthStore.save(sample) { _, _ in }
+            healthStore.save(sample) { _, _ in
+                WidgetCenter.shared.reloadAllTimelines()
+            }
         }
     }
     
