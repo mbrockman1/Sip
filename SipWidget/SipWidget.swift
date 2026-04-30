@@ -308,6 +308,13 @@ struct LockScreenView: View {
             let fill = HydrationMath.fillRatio(current: current, goal: context.state.dailyGoal)
             let mins = tl.date.timeIntervalSince(context.state.lastDrinkTimestamp) / 60
             let btns = readLogButtons(isOunces: context.state.isOunces)
+            
+            let amount1 = context.state.btnLive1
+            let label1 = HydrationMath.formatLabel(amount: amount1, isOunces: context.state.isOunces)
+            let amount2 = context.state.btnLive2
+            let label2 = HydrationMath.formatLabel(amount: amount2, isOunces: context.state.isOunces)
+            let amount3 = context.state.btnLive3
+            let labe3 = HydrationMath.formatLabel(amount: amount3, isOunces: context.state.isOunces)
  
             // Branch: Watch Smart Stack gets its own compact layout
             if activityFamily == .small {
@@ -553,84 +560,106 @@ struct SipHomeWidget: Widget {
                 .containerBackground(Color(UIColor.systemBackground), for: .widget)
         }
         .configurationDisplayName("Sip Tracker")
-        .supportedFamilies([.systemSmall, .accessoryCircular])
+        .supportedFamilies([.systemSmall, .systemMedium, .accessoryCircular])
     }
 }
 
 struct HomeWidgetView: View {
     var entry: HydrationEntry
     @Environment(\.widgetFamily) var family
- 
+    
     @AppStorage("currentIntakeML", store: Constants.defaults) var currentIntakeML: Double = 0
-    @AppStorage("dailyGoalML",     store: Constants.defaults) var dailyGoalML: Double = 2000
-    @AppStorage("isOunces",        store: Constants.defaults) var isOunces: Bool = false
- 
+    @AppStorage("dailyGoalML", store: Constants.defaults) var dailyGoalML: Double = 2000
+    @AppStorage("isOunces", store: Constants.defaults) var isOunces: Bool = false
+    
+    @AppStorage("btnSmall", store: Constants.defaults) var btnSmall: Double = 354.9
+    
+    @AppStorage("btnMed1", store: Constants.defaults) var btnMed1: Double = 177.4
+    @AppStorage("btnMed2", store: Constants.defaults) var btnMed2: Double = 354.9
+    @AppStorage("btnMed3", store: Constants.defaults) var btnMed3: Double = 473.2
+    
     var body: some View {
         let lastDrink = Constants.defaults.object(forKey: "lastDrinkTimestamp") as? Date ?? Date()
-        let current   = HydrationMath.currentLevel(intake: currentIntakeML, lastDrink: lastDrink, now: Date())
-        let fill      = HydrationMath.fillRatio(current: current, goal: dailyGoalML)
-        let btns      = readLogButtons(isOunces: isOunces)
-        let streak    = StreakManager.computeStreak()
- 
-        if family == .accessoryCircular {
-            if fill >= 1.0 {
+        let current = HydrationMath.currentLevel(intake: currentIntakeML, lastDrink: lastDrink, now: Date())
+        let fillRatio = min(1.0, current / dailyGoalML)
+        let isGoalMet = current >= dailyGoalML
+        
+        // Temporarily hardcoded for Part 1 (We will make these customizable in Part 2)
+        let labelSmall = HydrationMath.formatLabel(amount: btnSmall, isOunces: isOunces)
+        let labelMed1 = HydrationMath.formatLabel(amount: btnMed1, isOunces: isOunces)
+        let labelMed2 = HydrationMath.formatLabel(amount: btnMed2, isOunces: isOunces)
+        let labelMed3 = HydrationMath.formatLabel(amount: btnMed3, isOunces: isOunces)
+        
+        switch family {
+        case .accessoryCircular:
+            if isGoalMet {
                 Image(systemName: "checkmark.circle.fill").foregroundColor(.green)
             } else {
-                Gauge(value: fill) {
-                    Image(systemName: "drop.fill")
-                }
-                .gaugeStyle(.accessoryCircular)
-                .tint(.blue)
+                Gauge(value: fillRatio) { Image(systemName: "drop.fill") }.gaugeStyle(.accessoryCircular).tint(.cyan)
             }
-        } else {
-            // systemSmall
-            if fill >= 1.0 {
-                VStack(spacing: 6) {
-                    Image(systemName: "checkmark.circle.fill").font(.title2).foregroundColor(.green)
-                    Text("Goal Hit!").font(.headline)
-                    if streak > 0 {
-                        Text(StreakManager.flameEmoji(for: streak) + " \(streak)d")
-                            .font(.caption.bold()).foregroundColor(.orange)
+            
+        case .systemSmall:
+            // 🌟 SMALL WIDGET: Vertical bar, centered, 1 button
+            VStack {
+                HStack(alignment: .bottom, spacing: 12) {
+                    ZStack(alignment: .bottom) {
+                        Capsule().fill(Color.gray.opacity(0.2))
+                        Capsule().fill(Color.cyan).frame(height: 70 * fillRatio)
+                    }.frame(width: 16, height: 70)
+                    
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(HydrationMath.formatLabel(amount: current, isOunces: isOunces))
+                            .font(.title3.bold())
+                        Text("of \(HydrationMath.formatLabel(amount: dailyGoalML, isOunces: isOunces))")
+                            .font(.caption2).foregroundColor(.secondary)
                     }
+                    .padding(.bottom, 4)
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else {
-                VStack(alignment: .leading, spacing: 6) {
-                    HStack(alignment: .top, spacing: 8) {
-                        ZStack(alignment: .bottom) {
-                            RoundedRectangle(cornerRadius: 5).fill(Color.blue.opacity(0.12))
-                            RoundedRectangle(cornerRadius: 5)
-                                .fill(LinearGradient(
-                                    colors: [.blue, .cyan.opacity(0.7)],
-                                    startPoint: .bottom, endPoint: .top))
-                                .frame(height: 50 * fill)
-                        }
-                        .frame(width: 12, height: 50)
- 
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(HydrationMath.formatLabel(amount: current, isOunces: isOunces))
-                                .font(.headline.monospacedDigit())
-                                .foregroundColor(.blue)
-                            Text("Level").font(.caption2).foregroundColor(.secondary)
-                            if streak > 0 {
-                                Text(StreakManager.flameEmoji(for: streak) + " \(streak)d")
-                                    .font(.caption2.bold()).foregroundColor(.orange)
-                            }
-                        }
-                    }
+                
+                Spacer()
+                
+                Button(intent: LogWaterIntent(amount: btnSmall)) {
+                    Text(labelSmall).font(.caption.bold()).frame(maxWidth: .infinity).padding(.vertical, 8)
+                        .background(Color.cyan.opacity(0.2)).foregroundColor(.cyan).cornerRadius(8)
+                }
+            }
+            
+        case .systemMedium:
+            // 🌟 MEDIUM WIDGET: Horizontal bar, 2 buttons (Mirrors Live Activity)
+            VStack(spacing: 12) {
+                HStack {
+                    Image(systemName: "drop.fill").foregroundColor(.cyan)
+                    Text("Hydration").font(.headline)
                     Spacer()
-                    // First button from user's saved buttons
-                    Button(intent: LogWaterIntent(amount: btns[0].amount)) {
-                        Text(btns[0].label)
-                            .font(.caption.bold())
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 6)
-                            .background(Color.blue.opacity(0.15))
-                            .foregroundColor(.blue)
-                            .cornerRadius(8)
+                    Text(HydrationMath.formatLabel(amount: current, isOunces: isOunces))
+                        .font(.headline.monospacedDigit()).foregroundColor(.cyan)
+                }
+                
+                GeometryReader { proxy in
+                    ZStack(alignment: .leading) {
+                        Capsule().fill(Color.gray.opacity(0.2))
+                        Capsule().fill(Color.cyan).frame(width: max(0, proxy.size.width * fillRatio))
+                    }
+                }.frame(height: 12)
+                
+                HStack(spacing: 12) {
+                    Button(intent: LogWaterIntent(amount: btnMed1)) {
+                        Text(labelMed1).font(.caption.bold()).frame(maxWidth: .infinity).padding(.vertical, 8)
+                            .background(Color.cyan.opacity(0.2)).foregroundColor(.cyan).cornerRadius(8)
+                    }
+                    Button(intent: LogWaterIntent(amount: btnMed2)) {
+                        Text(labelMed2).font(.caption.bold()).frame(maxWidth: .infinity).padding(.vertical, 8)
+                            .background(Color.cyan.opacity(0.2)).foregroundColor(.cyan).cornerRadius(8)
+                    }
+                    Button(intent: LogWaterIntent(amount: btnMed3)) {
+                        Text(labelMed3).font(.caption.bold()).frame(maxWidth: .infinity).padding(.vertical, 8)
+                            .background(Color.cyan.opacity(0.2)).foregroundColor(.cyan).cornerRadius(8)
                     }
                 }
             }
+            
+        default:
+            Text("Unsupported Widget")
         }
     }
 }

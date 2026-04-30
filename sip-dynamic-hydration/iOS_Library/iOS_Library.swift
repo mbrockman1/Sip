@@ -9,7 +9,7 @@ import Foundation
 import AppIntents
 import SwiftUI
 import UserNotifications
-
+import WidgetKit
 import ActivityKit
 
 
@@ -22,6 +22,10 @@ struct HydrationAttributes: ActivityAttributes, Sendable {
         var isOunces: Bool
         var streak: Int           // 🔥 New: current streak for Live Activity
         var goalAdjustedBy: Double // New: how much goal was bumped today (0 = no bump)
+        
+        var btnLive1: Double
+        var btnLive2: Double
+        var btnLive3: Double
     }
     var name: String = "SipTracker"
 }
@@ -59,7 +63,10 @@ struct LogWaterIntent: LiveActivityIntent {
             dailyGoal: dailyGoal,
             isOunces: defaults.bool(forKey: "isOunces"),
             streak: streak,
-            goalAdjustedBy: goalAdjustedBy
+            goalAdjustedBy: goalAdjustedBy,
+            btnLive1: defaults.double(forKey: "btnLive1") == 0 ? 177.4 : defaults.double(forKey: "btnLive1"),
+            btnLive2: defaults.double(forKey: "btnLive2") == 0 ? 354.9 : defaults.double(forKey: "btnLive2"),
+            btnLive3: defaults.double(forKey: "btnLive3") == 0 ? 473.2 : defaults.double(forKey: "btnLive3"),
         )
 
         if newLevel >= dailyGoal {
@@ -100,6 +107,8 @@ struct LogWaterIntent: LiveActivityIntent {
                 }
             }
         }
+        WidgetCenter.shared.reloadAllTimelines()
+        
         return .result()
     }
 }

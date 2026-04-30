@@ -35,6 +35,8 @@ struct SipWatchProvider: TimelineProvider {
     
     private func createEntry(for date: Date) -> WatchHydrationEntry {
         let goal = sharedDefaults.double(forKey: "dailyGoalML")
+        let defaults = Constants.defaults
+        
         return WatchHydrationEntry(
             date: date,
             currentML: sharedDefaults.double(forKey: "currentIntakeML"),

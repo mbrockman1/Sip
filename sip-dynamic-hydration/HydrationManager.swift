@@ -6,6 +6,7 @@ import UserNotifications
 import WeatherKit
 import CoreLocation
 import WatchConnectivity
+import WidgetKit
 
 struct DailyIntake: Identifiable {
     let id = UUID()
@@ -112,6 +113,25 @@ class HydrationManager: NSObject, ObservableObject, WCSessionDelegate {
     private let energyType = HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned)!
     private let workoutType = HKObjectType.workoutType()
     private let locationManager = CLLocationManager()
+    
+    
+    // Button array
+    @Published var btnApp1: Double = 177.4 { didSet { Constants.defaults.set(btnApp1, forKey: "btnApp1") } }
+    @Published var btnApp2: Double = 354.9 { didSet { Constants.defaults.set(btnApp2, forKey: "btnApp2") } }
+    @Published var btnApp3: Double = 473.2  { didSet { Constants.defaults.set(btnApp3, forKey: "btnApp3") } }
+    
+    @Published var btnSmall: Double = 354.9 { didSet { Constants.defaults.set(btnSmall, forKey: "btnSmall"); WidgetCenter.shared.reloadAllTimelines() } }
+    
+    @Published var btnMed1: Double = 177.4  { didSet { Constants.defaults.set(btnMed1, forKey: "btnMed1"); WidgetCenter.shared.reloadAllTimelines() } }
+    @Published var btnMed2: Double = 354.9  { didSet { Constants.defaults.set(btnMed2, forKey: "btnMed2"); WidgetCenter.shared.reloadAllTimelines() } }
+    @Published var btnMed3: Double = 473.2 { didSet { Constants.defaults.set(btnMed3, forKey: "btnMed3"); WidgetCenter.shared.reloadAllTimelines() } }
+    
+    @Published var btnLive1: Double = 177.4 { didSet { Constants.defaults.set(btnLive1, forKey: "btnLive1"); ensureActivityRunning(forceUpdate: true) } }
+    @Published var btnLive2: Double = 354.9 { didSet { Constants.defaults.set(btnLive2, forKey: "btnLive2"); ensureActivityRunning(forceUpdate: true) } }
+    @Published var btnLive3: Double = 473.2 { didSet { Constants.defaults.set(btnLive3, forKey: "btnLive3"); ensureActivityRunning(forceUpdate: true) } }
+    
+    @Published var btnWatch1: Double = 236.588 { didSet { Constants.defaults.set(btnWatch1, forKey: "btnWatch1"); pushStateToWatch() } }
+    @Published var btnWatch2: Double = 473.176 { didSet { Constants.defaults.set(btnWatch2, forKey: "btnWatch2"); pushStateToWatch() } }
 
     override init() {
         super.init()
@@ -137,7 +157,9 @@ class HydrationManager: NSObject, ObservableObject, WCSessionDelegate {
                     "isOunces": self.isOunces,
                     "dailyGoalML": self.dailyGoalML,
                     "currentIntakeML": self.currentIntakeML,
-                    "lastDrinkTimestamp": self.lastDrinkTimestamp
+                    "lastDrinkTimestamp": self.lastDrinkTimestamp,
+                    "btnWatch1": self.btnWatch1,
+                    "btnWatch2": self.btnWatch2
                 ])
             } catch {}
         }
@@ -160,6 +182,25 @@ class HydrationManager: NSObject, ObservableObject, WCSessionDelegate {
         let d = Constants.defaults
         let savedGoal = d.double(forKey: "dailyGoalML")
         let savedBase = d.double(forKey: "baseGoalML")
+        
+        func loadBtn(_ key: String, def: Double) -> Double {
+            let val = d.double(forKey: key)
+            return val == 0 ? def : val
+        }
+        
+        btnApp1 = loadBtn("btnApp1", def: 177.4)
+        btnApp2 = loadBtn("btnApp2", def: 354.9)
+        btnApp3 = loadBtn("btnApp3", def: 473.176)
+        btnSmall = loadBtn("btnSmall", def: 354.9)
+        btnMed1 = loadBtn("btnMed1", def: 177.4)
+        btnMed2 = loadBtn("btnMed2", def: 354.9)
+        btnMed3 = loadBtn("btnMed3", def: 473.176)
+        btnLive1 = loadBtn("btnLive1", def: 177.4)
+        btnLive2 = loadBtn("btnLive2", def: 354.9)
+        btnLive3 = loadBtn("btnLive3", def: 473.176)
+        btnWatch1 = loadBtn("btnWatch1", def: 236.588)
+        btnWatch2 = loadBtn("btnWatch2", def: 473.176)
+        
         baseGoalML = savedBase == 0 ? 2000 : savedBase
         dailyGoalML = savedGoal == 0 ? 2000 : savedGoal
         currentIntakeML = d.double(forKey: "currentIntakeML")
@@ -329,6 +370,7 @@ class HydrationManager: NSObject, ObservableObject, WCSessionDelegate {
             refreshDailySummary()
         }
         self.pushStateToWatch()
+        WidgetCenter.shared.reloadAllTimelines() 
     }
     
     func undoLastDrink() {
@@ -394,7 +436,10 @@ class HydrationManager: NSObject, ObservableObject, WCSessionDelegate {
             dailyGoal: dailyGoalML,
             isOunces: isOunces,
             streak: currentStreak,
-            goalAdjustedBy: goalAdjustedBy
+            goalAdjustedBy: goalAdjustedBy,
+            btnLive1: btnLive1,
+            btnLive2: btnLive2,
+            btnLive3: btnLive3,
         )
         if let activity = Activity<HydrationAttributes>.activities.first {
             Task { await activity.update(ActivityContent(state: state, staleDate: nil)) }

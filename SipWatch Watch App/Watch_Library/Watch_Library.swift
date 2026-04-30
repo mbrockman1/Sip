@@ -30,6 +30,9 @@ class WatchManager: NSObject, ObservableObject, WCSessionDelegate {
     @Published var isOunces: Bool
     @Published var lastDrinkTimestamp: Date
     
+    @Published var btnWatch1: Double
+    @Published var btnWatch2: Double
+    
     let healthStore = HKHealthStore()
     let waterType = HKQuantityType.quantityType(forIdentifier: .dietaryWater)!
     
@@ -38,6 +41,8 @@ class WatchManager: NSObject, ObservableObject, WCSessionDelegate {
         self.currentIntakeML = sharedDefaults.double(forKey: "currentIntakeML")
         self.isOunces = sharedDefaults.bool(forKey: "isOunces")
         self.lastDrinkTimestamp = sharedDefaults.object(forKey: "lastDrinkTimestamp") as? Date ?? Date()
+        self.btnWatch1 = sharedDefaults.double(forKey: "btnWatch1") == 0 ? 236.588 : sharedDefaults.double(forKey: "btnWatch1")
+        self.btnWatch2 = sharedDefaults.double(forKey: "btnWatch2") == 0 ? 473.176 : sharedDefaults.double(forKey: "btnWatch2")
         
         super.init()
         if WCSession.isSupported() {
@@ -117,6 +122,8 @@ class WatchManager: NSObject, ObservableObject, WCSessionDelegate {
                let timestamp = applicationContext["lastDrinkTimestamp"] as? Date {
                 self.updateLocalState(intake: intake, timestamp: timestamp)
             }
+            if let b1 = applicationContext["btnWatch1"] as? Double { self.btnWatch1 = b1; sharedDefaults.set(b1, forKey: "btnWatch1") }
+            if let b2 = applicationContext["btnWatch2"] as? Double { self.btnWatch2 = b2; sharedDefaults.set(b2, forKey: "btnWatch2") }
         }
     }
 }

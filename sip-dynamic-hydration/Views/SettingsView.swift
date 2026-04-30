@@ -71,47 +71,10 @@ struct SettingsView: View {
                 NavigationLink("Manage Today's Logs", destination: HistoryView().environmentObject(manager))
 
                 // ── Log Buttons ───────────────────────────────────────
-                Section(
-                    header: Text("Quick Log Buttons"),
-                    footer: Text("You can also long-press any button on the main screen to log a custom amount and optionally save it here.")
-                ) {
-                    ForEach(0..<manager.customButtons.count, id: \.self) { i in
-                        HStack {
-                            Text("Button \(i + 1)")
-                                .foregroundColor(.secondary)
-                                .frame(width: 72, alignment: .leading)
- 
-                            Slider(
-                                value: Binding(
-                                    get: { manager.customButtons[i].amountML },
-                                    // Update local model live for preview,
-                                    // but Live Activity is only poked on drag-end (onEditingChanged)
-                                    set: { newVal in
-                                        var btns = manager.customButtons
-                                        btns[i] = LogButton(amountML: newVal)
-                                        manager.customButtons = btns
-                                        manager.saveButtons()
-                                    }
-                                ),
-                                in: manager.isOunces ? 29.5...1183.0 : 50...1000.0,
-                                step: manager.isOunces ? 29.5 : 50,
-                                onEditingChanged: { editing in
-                                    if !editing {
-                                        // Drag ended — poke Live Activity once
-                                        manager.ensureActivityRunning(forceUpdate: true)
-                                    }
-                                }
-                            )
-                            .tint(.cyan)
- 
-                            Text(manager.logButtons[i].label)
-                                .font(.caption.bold())
-                                .foregroundColor(.cyan)
-                                .frame(width: 64, alignment: .trailing)
-                        }
-                    }
+                Section(header: Text("Quick Log Buttons")) {
+                    NavigationLink("Configure Quick Buttons", destination: ButtonSettingsView().environmentObject(manager))
                 }
-                
+            
 
                 // ── Smart Goals ───────────────────────────────────────
                 Section(
@@ -162,6 +125,75 @@ struct SettingsView: View {
             }
             .navigationTitle("Settings")
         }
+    }
+}
+
+struct ButtonSettingsView: View {
+    @EnvironmentObject var manager: HydrationManager
+    
+    var body: some View {
+        Form {
+            Section(header: Text("iPhone App")) {
+                ButtonConfigRow(title: "Left Button", valueML: $manager.btnApp1, isOunces: manager.isOunces)
+                ButtonConfigRow(title: "Middle Button", valueML: $manager.btnApp2, isOunces: manager.isOunces)
+                ButtonConfigRow(title: "Right Button", valueML: $manager.btnApp3, isOunces: manager.isOunces)
+            }
+            Section(header: Text("Small Home Widget")) {
+                ButtonConfigRow(title: "Main Button", valueML: $manager.btnSmall, isOunces: manager.isOunces)
+            }
+            Section(header: Text("Medium Home Widget")) {
+                ButtonConfigRow(title: "Left Button", valueML: $manager.btnMed1, isOunces: manager.isOunces)
+                ButtonConfigRow(title: "Middle Button", valueML: $manager.btnMed2, isOunces: manager.isOunces)
+                ButtonConfigRow(title: "Right Button", valueML: $manager.btnMed3, isOunces: manager.isOunces)
+            }
+            Section(header: Text("Live Activity & Lock Screen")) {
+                ButtonConfigRow(title: "Left Button", valueML: $manager.btnLive1, isOunces: manager.isOunces)
+                ButtonConfigRow(title: "Middle Button", valueML: $manager.btnLive2, isOunces: manager.isOunces)
+                ButtonConfigRow(title: "Right Button", valueML: $manager.btnLive3, isOunces: manager.isOunces)
+            }
+            Section(header: Text("Apple Watch")) {
+                ButtonConfigRow(title: "Left Button", valueML: $manager.btnWatch1, isOunces: manager.isOunces)
+                ButtonConfigRow(title: "Right Button", valueML: $manager.btnWatch2, isOunces: manager.isOunces)
+            }
+        }
+        .navigationTitle("Quick Buttons")
+    }
+}
+
+struct ButtonConfigRow: View {
+    let title: String
+    @Binding var valueML: Double
+    let isOunces: Bool
+    
+    var body: some View {
+        let displayVal = isOunces ? (valueML / HydrationMath.ozMultiplier) : valueML
+        
+        // Define ranges and steps based on units
+        let range: ClosedRange<Double> = isOunces ? 2.0...64.0 : 50.0...2000.0
+        let step: Double = isOunces ? 1.0 : 10.0 // 1oz steps or 10ml steps for smoothness
+        
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text(title)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Spacer()
+                // The value updates live as the user slides
+                Text("\(Int(round(displayVal))) \(isOunces ? "oz" : "ml")")
+                    .font(.system(.headline, design: .rounded))
+                    .foregroundColor(.cyan)
+            }
+            
+            Slider(value: Binding(
+                get: { displayVal },
+                set: { newVal in
+                    // Convert the slider's display value back to ML for the logic engine
+                    valueML = isOunces ? (newVal * HydrationMath.ozMultiplier) : newVal
+                }
+            ), in: range, step: step)
+            .tint(.cyan) // Matches your app's theme
+        }
+        .padding(.vertical, 8)
     }
 }
 

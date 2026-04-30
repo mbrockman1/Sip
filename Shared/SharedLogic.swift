@@ -7,14 +7,12 @@ import Foundation
 import AppIntents
 import SwiftUI
 import UserNotifications
+import WidgetKit
 
 
 // MARK: - App Group Constants
 struct Constants {
     static let appGroup = "group.org.mjbapps.sip"
-    
-    // Use a direct force-unwrap or a computed property.
-    // If your entitlements are correct, this will never fail.
     static let defaults: UserDefaults = UserDefaults(suiteName: appGroup)!
 }
 
@@ -35,20 +33,20 @@ struct LogButton: Codable {
 
 // MARK: - Core Hydration Math
 struct HydrationMath: Sendable {
-    /// Metabolic decay: body processes ~60ml/hr continuously
+    static let ozMultiplier = 29.5735296
+    
     static func currentLevel(intake: Double, lastDrink: Date, now: Date) -> Double {
         let hoursPassed = max(0, now.timeIntervalSince(lastDrink)) / 3600.0
         let decay = hoursPassed * 60.0
         return max(0, intake - decay)
     }
 
-    /// How many ml are being lost per hour right now (always 60)
     static let decayRatePerHour: Double = 60.0
 
     static func formatLabel(amount: Double, isOunces: Bool) -> String {
         let displayAmount = isOunces ? (amount / 29.5735) : amount
         let unit = isOunces ? "oz" : "ml"
-        return "\(Int(displayAmount)) \(unit)"
+        return "\(Int(round(displayAmount))) \(unit)" 
     }
 
     /// Percentage of goal met, clamped 0–1
@@ -60,54 +58,38 @@ struct HydrationMath: Sendable {
 
 // MARK: - Streak Logic
 struct StreakManager {
-    /// Returns the current consecutive-day streak from persisted history.
-    /// A day "counts" if the user logged >= their goal that day.
+    static let defaults = Constants.defaults
+    
+    
     static func computeStreak() -> Int {
-        let defaults = Constants.defaults
-        // goalHitDates: array of day-start timestamps stored as [Double] (timeIntervalSinceReferenceDate)
-        let rawDates = defaults.array(forKey: "goalHitDates") as? [Double] ?? []
-        let calendar = Calendar.current
-
-        // Build a Set of day-start dates where goal was hit
-        let hitDays: Set<Date> = Set(rawDates.compactMap { interval -> Date? in
-            let date = Date(timeIntervalSinceReferenceDate: interval)
-            return calendar.startOfDay(for: date)
-        })
-
-        var streak = 0
-        var checkDate = calendar.startOfDay(for: Date())
-
-        // Walk backwards from today (or yesterday if today not yet hit)
-        // Start from today — if today is not yet hit, we still show yesterday's streak
-        while hitDays.contains(checkDate) {
-            streak += 1
-            guard let prev = calendar.date(byAdding: .day, value: -1, to: checkDate) else { break }
-            checkDate = prev
+        let lastHit = defaults.object(forKey: "lastGoalHitDate") as? Date ?? Date.distantPast
+        let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: Calendar.current.startOfDay(for: Date()))!
+        
+        // If they didn't hit it yesterday or today, streak is broken
+        if !Calendar.current.isDate(lastHit, inSameDayAs: yesterday) && !Calendar.current.isDateInToday(lastHit) {
+            defaults.set(0, forKey: "currentStreak")
+            return 0
         }
-
-        // If today not hit yet, check if yesterday starts the chain
-        if streak == 0 {
-            guard let yesterday = calendar.date(byAdding: .day, value: -1, to: calendar.startOfDay(for: Date())) else { return 0 }
-            checkDate = yesterday
-            while hitDays.contains(checkDate) {
-                streak += 1
-                guard let prev = calendar.date(byAdding: .day, value: -1, to: checkDate) else { break }
-                checkDate = prev
-            }
-        }
-
-        return streak
+        return defaults.integer(forKey: "currentStreak")
     }
+    
 
-    /// Call this when the user hits their daily goal
     static func recordGoalHit() {
-        let defaults = Constants.defaults
-        var rawDates = defaults.array(forKey: "goalHitDates") as? [Double] ?? []
-        let today = Calendar.current.startOfDay(for: Date()).timeIntervalSinceReferenceDate
-        if !rawDates.contains(today) {
-            rawDates.append(today)
-            defaults.set(rawDates, forKey: "goalHitDates")
+        let today = Calendar.current.startOfDay(for: Date())
+        let lastHit = defaults.object(forKey: "lastGoalHitDate") as? Date ?? Date.distantPast
+        
+        // If we already hit it today, don't increment
+        if Calendar.current.isDateInToday(lastHit) { return }
+        
+        // If yesterday, increment streak. If not, reset to 1.
+        let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: today)!
+        if Calendar.current.isDate(lastHit, inSameDayAs: yesterday) {
+            let current = defaults.integer(forKey: "currentStreak")
+            defaults.set(current + 1, forKey: "currentStreak")
+        } else {
+            defaults.set(1, forKey: "currentStreak")
         }
+        defaults.set(today, forKey: "lastGoalHitDate")
     }
 
     /// Flame emoji scale based on streak length

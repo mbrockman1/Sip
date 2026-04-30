@@ -26,10 +26,10 @@ struct WatchContentView: View {
             let goalAdjustedBy = UserDefaults.standard.double(forKey: "goalAdjustedBy")
             let isPhoneReachable = WCSession.default.isReachable
             
-            let btn1Amount = manager.isOunces ? 236.588 : 250.0
-            let btn1Label = manager.isOunces ? "+ 8 oz" : "+ 250 ml"
-            let btn2Amount = manager.isOunces ? 473.176 : 500.0
-            let btn2Label = manager.isOunces ? "+ 16 oz" : "+ 500 ml"
+            let btn1Amount = manager.btnWatch1
+            let btn1Label = WatchMath.formatLabel(amount: btn1Amount, isOunces: manager.isOunces)
+            let btn2Amount = manager.btnWatch2
+            let btn2Label = WatchMath.formatLabel(amount: btn2Amount, isOunces: manager.isOunces)
 
             ScrollView {
                 VStack(spacing: 10) {
