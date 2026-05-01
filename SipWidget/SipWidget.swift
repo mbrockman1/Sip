@@ -235,7 +235,6 @@ struct ExpandedBottomView: View {
                 lastDrink: context.state.lastDrinkTimestamp,
                 now: tl.date)
             let fill = HydrationMath.fillRatio(current: current, goal: context.state.dailyGoal)
-            let btns = readLogButtons(isOunces: context.state.isOunces)
             
             let amount1 = context.state.btnLive1
             let label1 = HydrationMath.formatLabel(amount: amount1, isOunces: context.state.isOunces)

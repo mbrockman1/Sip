@@ -2,7 +2,6 @@ import SwiftUI
 
 @main
 struct SipWatchApp: App {
-    // FIXED: Changed from WatchSessionManager to WatchManager
     @StateObject var manager = WatchManager()
     @Environment(\.scenePhase) var scenePhase
 
@@ -20,8 +19,6 @@ struct SipWatchApp: App {
                 }
                 .onOpenURL { url in
                     print("Opened from mirrored Live Activity: \(url)")
-                    // You don't actually have to do anything here,
-                    // the modifier just has to exist to accept the handshake!
                 }
         }
     }

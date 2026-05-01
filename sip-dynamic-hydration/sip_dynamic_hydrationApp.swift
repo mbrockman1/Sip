@@ -10,8 +10,6 @@ struct sip_dynamic_hydrationApp: App {
             ContentView()
                 .environmentObject(manager)
                 .onAppear {
-                    // We don't need PhoneSessionManager because 
-                    // HydrationManager handles WCSession internally now!
                 }
                 .onChange(of: scenePhase) { _, newPhase in
                     if newPhase == .active {
