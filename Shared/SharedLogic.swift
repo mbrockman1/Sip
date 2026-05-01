@@ -91,6 +91,23 @@ struct StreakManager {
         }
         defaults.set(today, forKey: "lastGoalHitDate")
     }
+    
+    static func revokeGoalHit() {
+            let today = Calendar.current.startOfDay(for: Date())
+            let lastHit = defaults.object(forKey: "lastGoalHitDate") as? Date ?? Date.distantPast
+            
+            // Only revoke if the goal was actually hit TODAY
+            if Calendar.current.isDateInToday(lastHit) {
+                let current = defaults.integer(forKey: "currentStreak")
+                
+                // Roll the streak back by 1
+                defaults.set(max(0, current - 1), forKey: "currentStreak")
+                
+                // Roll the 'last hit date' back to yesterday so the streak isn't destroyed, just paused
+                let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: today)!
+                defaults.set(yesterday, forKey: "lastGoalHitDate")
+            }
+        }
 
     /// Flame emoji scale based on streak length
     static func flameEmoji(for streak: Int) -> String {
@@ -112,6 +129,7 @@ struct StreakManager {
         default: return nil
         }
     }
+    
 }
 
 func readLogButtons(isOunces: Bool) -> [(amount: Double, label: String)] {

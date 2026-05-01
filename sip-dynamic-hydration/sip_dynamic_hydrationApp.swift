@@ -19,7 +19,7 @@ struct sip_dynamic_hydrationApp: App {
                         manager.refreshDailySummary()
                         
                         if manager.useAdaptiveGoals {
-                            Task { await manager.refreshAdaptiveGoal() }
+                            Task { await manager.refreshAdaptiveGoal(force: true) }
                         }
                         
                         // Use the function now directly on the manager

@@ -318,6 +318,7 @@ class HydrationManager: NSObject, ObservableObject, WCSessionDelegate {
     func syncFromHealthKit() {
         fetchWeeklyHistory()
         fetchExtendedHistory()
+        
         let startOfDay = Calendar.current.startOfDay(for: Date())
         let predicate = HKQuery.predicateForSamples(withStart: startOfDay, end: Date(), options: .strictStartDate)
         let sort = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
@@ -328,13 +329,35 @@ class HydrationManager: NSObject, ObservableObject, WCSessionDelegate {
                 
                 var simLevel: Double = 0
                 var simTime = startOfDay
+                
+                var processedUUIDs = Set<UUID>()
+                
                 for sample in samples {
+                    // Ignore duplicates based on UUID (HealthKit assigns unique IDs)
+                    guard !processedUUIDs.contains(sample.uuid) else { continue }
+                    processedUUIDs.insert(sample.uuid)
+                    
                     let amount = sample.quantity.doubleValue(for: HKUnit.literUnit(with: .milli))
                     simLevel = HydrationMath.currentLevel(intake: simLevel, lastDrink: simTime, now: sample.startDate) + amount
                     simTime = sample.startDate
                 }
+                
                 self.currentIntakeML = simLevel
                 self.lastDrinkTimestamp = simTime
+                
+                if simLevel < self.dailyGoalML {
+                    if Constants.defaults.object(forKey: "goalHitDate") != nil {
+                        // 1. Remove the "Goal Achieved" flags
+                        Constants.defaults.removeObject(forKey: "goalHitDate")
+                        Constants.defaults.set(false, forKey: "hasDismissedGoalScreen")
+                        
+                        // 2. Roll back the streak
+                        StreakManager.revokeGoalHit()
+                        self.currentStreak = StreakManager.computeStreak()
+                        self.milestoneBadge = nil
+                    }
+                }
+                
                 self.ensureActivityRunning(forceUpdate: true)
                 self.pushStateToWatch()
             }
@@ -410,6 +433,20 @@ class HydrationManager: NSObject, ObservableObject, WCSessionDelegate {
 
     func checkMidnightReset() {
         if !Calendar.current.isDateInToday(lastDrinkTimestamp) {
+            let lastHitDate = Constants.defaults.object(forKey: "lastGoalHitDate") as? Date
+            let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: Calendar.current.startOfDay(for: Date()))!
+            
+            // If they didn't hit the goal yesterday, the streak is officially dead.
+            if let lastHit = lastHitDate {
+                if !Calendar.current.isDate(lastHit, inSameDayAs: yesterday) {
+                    Constants.defaults.set(0, forKey: "currentStreak")
+                    Constants.defaults.removeObject(forKey: "lastGoalHitDate")
+                }
+            } else {
+                // They never hit a goal ever, or missed yesterday
+                Constants.defaults.set(0, forKey: "currentStreak")
+            }
+            
             currentIntakeML = 0
             lastDrinkTimestamp = Date()
             goalAdjustedBy = 0
@@ -531,13 +568,22 @@ class HydrationManager: NSObject, ObservableObject, WCSessionDelegate {
 
     private func fetchActivityBump() async -> (ml: Double, reason: String)? {
         guard HKHealthStore.isHealthDataAvailable() else { return nil }
-        let predicate = HKQuery.predicateForSamples(withStart: Date().addingTimeInterval(-86400), end: Date(), options: .strictStartDate)
+        
+        let startOfDay = Calendar.current.startOfDay(for: Date())
+        let predicate = HKQuery.predicateForSamples(withStart: startOfDay, end: Date(), options: .strictStartDate)
+        
         return await withCheckedContinuation { continuation in
             let query = HKStatisticsQuery(quantityType: energyType, quantitySamplePredicate: predicate, options: .cumulativeSum) { _, result, _ in
                 let kcal = result?.sumQuantity()?.doubleValue(for: .kilocalorie()) ?? 0
-                if kcal > 600 { continuation.resume(returning: (self.baseGoalML * 0.20, "Heavy workout")) }
-                else if kcal > 300 { continuation.resume(returning: (self.baseGoalML * 0.10, "Active day")) }
-                else { continuation.resume(returning: nil) }
+                
+                // If they've burned calories today, adjust the goal!
+                if kcal > 600 {
+                    continuation.resume(returning: (self.baseGoalML * 0.20, "Heavy workout"))
+                } else if kcal > 300 {
+                    continuation.resume(returning: (self.baseGoalML * 0.10, "Active day"))
+                } else {
+                    continuation.resume(returning: nil)
+                }
             }
             healthStore.execute(query)
         }

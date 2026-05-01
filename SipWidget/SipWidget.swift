@@ -679,10 +679,15 @@ struct HomeWidgetView: View {
             VStack(spacing: 12) {
                 HStack {
                     Image(systemName: "drop.fill").foregroundColor(.cyan)
-                    Text("Hydration").font(.headline)
+                    Text("Sip").font(.headline)
                     Spacer()
-                    Text(HydrationMath.formatLabel(amount: current, isOunces: isOunces))
-                        .font(.headline.monospacedDigit()).foregroundColor(.cyan)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(HydrationMath.formatLabel(amount: current, isOunces: isOunces))
+                            .font(.title3.bold())
+                        Text("of \(HydrationMath.formatLabel(amount: dailyGoalML, isOunces: isOunces))")
+                            .font(.caption2).foregroundColor(.secondary)
+                    }
+                    .padding(.bottom, 4)
                 }
                 
                 GeometryReader { proxy in
