@@ -8,6 +8,7 @@ import CoreLocation
 import WatchConnectivity
 import WidgetKit
 import Foundation
+import BackgroundTasks
 
 struct DailyIntake: Identifiable {
     let id = UUID()
@@ -153,6 +154,12 @@ class HydrationManager: NSObject, ObservableObject, WCSessionDelegate {
             WCSession.default.delegate = self
             WCSession.default.activate()
         }
+        #if !targetEnvironment(appExtension)
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: "org.mjbapps.sip.refresh", using: nil) { task in
+            self.ensureActivityRunning(forceUpdate: true)
+            task.setTaskCompleted(success: true)
+        }
+        #endif
     }
     
     func pushStateToWatch() {
@@ -468,6 +475,7 @@ class HydrationManager: NSObject, ObservableObject, WCSessionDelegate {
         }
         currentStreak = StreakManager.computeStreak()
         refreshDailySummary()
+        fetchWeeklyHistory()
     }
 
     func ensureActivityRunning(forceUpdate: Bool = false) {

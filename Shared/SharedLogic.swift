@@ -29,13 +29,31 @@ struct LogButton: Codable {
     }
 }
 
+import Foundation
 
+struct AppInfo {
+    static var version: String {
+        Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
+    }
+
+    static var build: String {
+        Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
+    }
+
+    static var fullVersion: String {
+        "v\(version) (\(build))"
+    }
+}
 
 // MARK: - Core Hydration Math
 struct HydrationMath: Sendable {
     static let ozMultiplier = 29.5735296
     
     static func currentLevel(intake: Double, lastDrink: Date, now: Date) -> Double {
+        if !Calendar.current.isDate(lastDrink, inSameDayAs: now) {
+            return 0.0 // It's a new day! Drop to 0 instantly.
+        }
+        
         let hoursPassed = max(0, now.timeIntervalSince(lastDrink)) / 3600.0
         let decay = hoursPassed * 60.0
         return max(0, intake - decay)

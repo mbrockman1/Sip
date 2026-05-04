@@ -1,4 +1,5 @@
 import SwiftUI
+import WidgetKit
 
 @main
 struct SipWatchApp: App {
@@ -14,6 +15,7 @@ struct SipWatchApp: App {
                 }
                 .onChange(of: scenePhase) { newPhase in
                     if newPhase == .active {
+                        WidgetCenter.shared.reloadAllTimelines()
                         manager.fetchTodayData()
                     }
                 }

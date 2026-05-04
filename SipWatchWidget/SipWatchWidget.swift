@@ -34,17 +34,31 @@ struct SipWatchProvider: TimelineProvider {
     }
     
     private func createEntry(for date: Date) -> WatchHydrationEntry {
-        let goal = sharedDefaults.double(forKey: "dailyGoalML")
-        let defaults = Constants.defaults
-        
-        return WatchHydrationEntry(
-            date: date,
-            currentML: sharedDefaults.double(forKey: "currentIntakeML"),
-            lastDrink: sharedDefaults.object(forKey: "lastDrinkTimestamp") as? Date ?? Date(),
-            goalML: goal > 0 ? goal : 2000,
-            isOunces: sharedDefaults.bool(forKey: "isOunces")
-        )
-    }
+            let sharedDefaults = UserDefaults(suiteName: "group.org.mjbapps.sip-dynamic-hydration")!
+            let goal = sharedDefaults.double(forKey: "dailyGoalML")
+            let lastDrink = sharedDefaults.object(forKey: "lastDrinkTimestamp") as? Date ?? Date()
+            
+            // 🌟 THE MIDNIGHT AUTO-RESET FOR WIDGETS
+            // If the date in UserDefaults is not today, force the widget to show 0
+            let currentIntake: Double
+            let actualLastDrink: Date
+            
+            if !Calendar.current.isDateInToday(lastDrink) {
+                currentIntake = 0
+                actualLastDrink = date // Pretend the "last drink" was now
+            } else {
+                currentIntake = sharedDefaults.double(forKey: "currentIntakeML")
+                actualLastDrink = lastDrink
+            }
+            
+            return WatchHydrationEntry(
+                date: date,
+                currentML: currentIntake,
+                lastDrink: actualLastDrink,
+                goalML: goal > 0 ? goal : 2000,
+                isOunces: sharedDefaults.bool(forKey: "isOunces")
+            )
+        }
 }
 
 // MARK: - 3. Local Math Helper

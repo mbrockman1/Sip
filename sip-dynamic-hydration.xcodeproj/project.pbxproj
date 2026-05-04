@@ -634,6 +634,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = "sip-dynamic-hydration/sip-dynamic-hydration.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -658,7 +659,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.20260501;
+				MARKETING_VERSION = 0.20260503;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.mjbapps.sip-dynamic-hydration";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -680,6 +681,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = "sip-dynamic-hydration/sip-dynamic-hydration.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -704,7 +706,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.20260501;
+				MARKETING_VERSION = 0.20260503;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.mjbapps.sip-dynamic-hydration";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -743,7 +745,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 0.20260501;
+				MARKETING_VERSION = 0.20260503;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.mjbapps.sip-dynamic-hydration.SipWidget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -782,7 +784,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 0.20260501;
+				MARKETING_VERSION = 0.20260503;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.mjbapps.sip-dynamic-hydration.SipWidget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -823,7 +825,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.20260501;
+				MARKETING_VERSION = 0.20260503;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.mjbapps.sip-dynamic-hydration.watchkitapp";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
@@ -863,7 +865,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.20260501;
+				MARKETING_VERSION = 0.20260503;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.mjbapps.sip-dynamic-hydration.watchkitapp";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
@@ -901,7 +903,7 @@
 					"@executable_path/../../Frameworks",
 					"@executable_path/../../../../Frameworks",
 				);
-				MARKETING_VERSION = 0.20260501;
+				MARKETING_VERSION = 0.20260502;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.mjbapps.sip-dynamic-hydration.watchkitapp.SipWatchWidget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
@@ -938,7 +940,7 @@
 					"@executable_path/../../Frameworks",
 					"@executable_path/../../../../Frameworks",
 				);
-				MARKETING_VERSION = 0.20260501;
+				MARKETING_VERSION = 0.20260502;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.mjbapps.sip-dynamic-hydration.watchkitapp.SipWatchWidget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;

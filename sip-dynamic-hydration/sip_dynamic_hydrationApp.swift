@@ -13,6 +13,8 @@ struct sip_dynamic_hydrationApp: App {
                 }
                 .onChange(of: scenePhase) { _, newPhase in
                     if newPhase == .active {
+                        manager.ensureActivityRunning(forceUpdate: true)
+                        
                         manager.checkMidnightReset()
                         manager.syncPendingAppGroupLogs()
                         manager.syncFromHealthKit()

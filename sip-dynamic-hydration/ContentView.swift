@@ -670,7 +670,7 @@ struct InfoView: View {
                         VStack(spacing: 4) {
                             Text("Sip").font(.headline.bold()).foregroundColor(.cyan)
                             Text("Real hydration, tracked honestly.").font(.caption).foregroundColor(.secondary)
-                            Text("v1.0").font(.caption2).foregroundColor(.secondary)
+                            Text(AppInfo.fullVersion).font(.caption2).foregroundColor(.secondary)
                         }
                         Spacer()
                     }.padding(.vertical, 8)
