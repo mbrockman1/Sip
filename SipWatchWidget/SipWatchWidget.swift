@@ -4,15 +4,14 @@ import SwiftUI
 // MARK: - 1. Data Model
 struct WatchHydrationEntry: TimelineEntry {
     let date: Date
-    let currentML: Double
-    let lastDrink: Date
+    let currentML: Double   // Raw intake from the app
+    let lastDrink: Date     // Exact time of last drink
     let goalML: Double
     let isOunces: Bool
 }
 
-// MARK: - 2. Provider (Reads from Watch App Group)
+// MARK: - 2. Provider (Passes the raw data, no predicting)
 struct SipWatchProvider: TimelineProvider {
-    // 🌟 CORRECTED APP GROUP to match your project
     let sharedDefaults = UserDefaults(suiteName: "group.org.mjbapps.sip")!
     
     func placeholder(in context: Context) -> WatchHydrationEntry {
@@ -22,48 +21,35 @@ struct SipWatchProvider: TimelineProvider {
     func getSnapshot(in context: Context, completion: @escaping (WatchHydrationEntry) -> Void) {
         completion(createEntry(for: Date()))
     }
-    
+
     func getTimeline(in context: Context, completion: @escaping (Timeline<WatchHydrationEntry>) -> Void) {
-        let currentDate = Date()
-        let entry = createEntry(for: currentDate)
+        let entry = createEntry(for: Date())
         
-        // 🌟 FIXED BUDGET DRAIN: We only ask the system to refresh at Midnight.
-        // The UI handles the minute-by-minute decay for free!
-        let midnight = Calendar.current.nextDate(after: currentDate, matching: DateComponents(hour: 0, minute: 0), matchingPolicy: .nextTime)!
-        let timeline = Timeline(entries: [entry], policy: .after(midnight))
+        // 🌟 POLICY .never: We only give it one snapshot. The TimelineView in the UI
+        // will handle the continuous live countdown. The watch app will force a
+        // widget reload when you log a new drink!
+        let timeline = Timeline(entries: [entry], policy: .never)
         completion(timeline)
     }
-
+    
     private func createEntry(for date: Date) -> WatchHydrationEntry {
-            let sharedDefaults = UserDefaults(suiteName: "group.org.mjbapps.sip-dynamic-hydration")!
-            let goal = sharedDefaults.double(forKey: "dailyGoalML")
-            let lastDrink = sharedDefaults.object(forKey: "lastDrinkTimestamp") as? Date ?? Date()
-            
-            // 🌟 THE MIDNIGHT AUTO-RESET FOR WIDGETS
-            // If the date in UserDefaults is not today, force the widget to show 0
-            let currentIntake: Double
-            let actualLastDrink: Date
-            
-            if !Calendar.current.isDateInToday(lastDrink) {
-                currentIntake = 0
-                actualLastDrink = date // Pretend the "last drink" was now
-            } else {
-                currentIntake = sharedDefaults.double(forKey: "currentIntakeML")
-                actualLastDrink = lastDrink
-            }
-            
-            return WatchHydrationEntry(
-                date: date,
-                currentML: currentIntake,
-                lastDrink: actualLastDrink,
-                goalML: goal > 0 ? goal : 2000,
-                isOunces: sharedDefaults.bool(forKey: "isOunces")
-            )
-        }
+        let goal = sharedDefaults.double(forKey: "dailyGoalML")
+        let rawLastDrink = sharedDefaults.object(forKey: "lastDrinkTimestamp") as? Date ?? Date()
+        let rawIntake = sharedDefaults.double(forKey: "currentIntakeML")
+        let isOunces = sharedDefaults.bool(forKey: "isOunces")
+        
+        // Handle midnight wipe so yesterday's data doesn't carry over in the morning
+        let currentIntake = Calendar.current.isDateInToday(rawLastDrink) ? rawIntake : 0.0
+        let lastDrink = Calendar.current.isDateInToday(rawLastDrink) ? rawLastDrink : date
+        let safeGoal = goal > 0 ? goal : 2000
+        
+        return WatchHydrationEntry(date: date, currentML: currentIntake, lastDrink: lastDrink, goalML: safeGoal, isOunces: isOunces)
+    }
 }
 
+// MARK: - 3. Local Math Helper
 struct WidgetMath {
-    static let ozMultiplier = 29.5735296 // 🌟 Fixed precision
+    static let ozMultiplier = 29.5735296
     
     static func currentLevel(intake: Double, lastDrink: Date, now: Date) -> Double {
         if !Calendar.current.isDate(lastDrink, inSameDayAs: now) { return 0.0 }
@@ -75,27 +61,26 @@ struct WidgetMath {
     static func formatLabel(amount: Double, isOunces: Bool) -> String {
         let displayAmount = isOunces ? (amount / ozMultiplier) : amount
         let unit = isOunces ? "oz" : "ml"
-        return "\(Int(round(displayAmount))) \(unit)" // 🌟 Fixed: Added round()
+        return "\(Int(round(displayAmount))) \(unit)"
     }
 }
 
+// MARK: - 4. UI (1:1 Mirror of the iPhone Live Activity)
 struct SipComplicationView: View {
     var entry: WatchHydrationEntry
     @Environment(\.widgetFamily) var family
 
     var body: some View {
-        // 🌟 FIXED BUDGET DRAIN: Wraps the UI in TimelineView so it animates locally!
-        TimelineView(.periodic(from: entry.lastDrink, by: 60)) { timeline in
+        // 🌟 TIMELINEVIEW: This ticks down minute-by-minute perfectly in sync with the iPhone!
+        TimelineView(.periodic(from: entry.lastDrink, by: 60)) { context in
             
-            let liveLevel = WidgetMath.currentLevel(intake: entry.currentML, lastDrink: entry.lastDrink, now: timeline.date)
+            let liveLevel = WidgetMath.currentLevel(intake: entry.currentML, lastDrink: entry.lastDrink, now: context.date)
             let fillRatio = min(1.0, max(0.0, liveLevel / entry.goalML))
-            
             let isGoalMet = fillRatio >= 1.0
             let themeColor: Color = isGoalMet ? .green : .cyan
             let iconName = isGoalMet ? "checkmark.circle.fill" : "drop.fill"
 
             switch family {
-                
             case .accessoryCircular, .accessoryCorner:
                 Gauge(value: fillRatio) {
                     Image(systemName: iconName).foregroundColor(themeColor)
@@ -132,7 +117,6 @@ struct SipComplicationView: View {
 }
 
 // MARK: - 5. Configuration
-// (Ensure your SipWatchWidgetBundle.swift is still pointing to 'SipWatchComplication')
 struct SipWatchComplication: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: "SipWatchComplication", provider: SipWatchProvider()) { entry in
