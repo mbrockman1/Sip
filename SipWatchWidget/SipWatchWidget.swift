@@ -22,17 +22,18 @@ struct SipWatchProvider: TimelineProvider {
     func getSnapshot(in context: Context, completion: @escaping (WatchHydrationEntry) -> Void) {
         completion(createEntry(for: Date()))
     }
-
+    
     func getTimeline(in context: Context, completion: @escaping (Timeline<WatchHydrationEntry>) -> Void) {
         let currentDate = Date()
         let entry = createEntry(for: currentDate)
         
-        // Refresh every 15 minutes to keep the decay gauge accurate on the wrist
-        let nextUpdate = Calendar.current.date(byAdding: .minute, value: 15, to: currentDate)!
-        let timeline = Timeline(entries: [entry], policy: .after(nextUpdate))
+        // 🌟 FIXED BUDGET DRAIN: We only ask the system to refresh at Midnight.
+        // The UI handles the minute-by-minute decay for free!
+        let midnight = Calendar.current.nextDate(after: currentDate, matching: DateComponents(hour: 0, minute: 0), matchingPolicy: .nextTime)!
+        let timeline = Timeline(entries: [entry], policy: .after(midnight))
         completion(timeline)
     }
-    
+
     private func createEntry(for date: Date) -> WatchHydrationEntry {
             let sharedDefaults = UserDefaults(suiteName: "group.org.mjbapps.sip-dynamic-hydration")!
             let goal = sharedDefaults.double(forKey: "dailyGoalML")
@@ -61,69 +62,71 @@ struct SipWatchProvider: TimelineProvider {
         }
 }
 
-// MARK: - 3. Local Math Helper
 struct WidgetMath {
+    static let ozMultiplier = 29.5735296 // 🌟 Fixed precision
+    
     static func currentLevel(intake: Double, lastDrink: Date, now: Date) -> Double {
+        if !Calendar.current.isDate(lastDrink, inSameDayAs: now) { return 0.0 }
         let hoursPassed = max(0, now.timeIntervalSince(lastDrink)) / 3600.0
         let decay = hoursPassed * 60.0
         return max(0, intake - decay)
     }
     
     static func formatLabel(amount: Double, isOunces: Bool) -> String {
-        let displayAmount = isOunces ? (amount / 29.5735) : amount
+        let displayAmount = isOunces ? (amount / ozMultiplier) : amount
         let unit = isOunces ? "oz" : "ml"
-        return "\(Int(displayAmount)) \(unit)"
+        return "\(Int(round(displayAmount))) \(unit)" // 🌟 Fixed: Added round()
     }
 }
 
-// MARK: - 4. Dead Simple UI
 struct SipComplicationView: View {
     var entry: WatchHydrationEntry
     @Environment(\.widgetFamily) var family
 
     var body: some View {
-        let liveLevel = WidgetMath.currentLevel(intake: entry.currentML, lastDrink: entry.lastDrink, now: entry.date)
-        let fillRatio = min(1.0, max(0.0, liveLevel / entry.goalML))
-        
-        let isGoalMet = fillRatio >= 1.0
-        let themeColor: Color = isGoalMet ? .green : .cyan
-        let iconName = isGoalMet ? "checkmark.circle.fill" : "drop.fill"
-
-        switch family {
+        // 🌟 FIXED BUDGET DRAIN: Wraps the UI in TimelineView so it animates locally!
+        TimelineView(.periodic(from: entry.lastDrink, by: 60)) { timeline in
             
-        // Small Circles (Corners & Dials)
-        case .accessoryCircular, .accessoryCorner:
-            Gauge(value: fillRatio) {
-                Image(systemName: iconName).foregroundColor(themeColor)
-            } currentValueLabel: {
-                Text("\(Int(fillRatio * 100))%")
-            }
-            .gaugeStyle(.accessoryCircular)
-            .tint(themeColor)
+            let liveLevel = WidgetMath.currentLevel(intake: entry.currentML, lastDrink: entry.lastDrink, now: timeline.date)
+            let fillRatio = min(1.0, max(0.0, liveLevel / entry.goalML))
+            
+            let isGoalMet = fillRatio >= 1.0
+            let themeColor: Color = isGoalMet ? .green : .cyan
+            let iconName = isGoalMet ? "checkmark.circle.fill" : "drop.fill"
 
-        // Smart Stack (Rectangular)
-        case .accessoryRectangular:
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Hydration").font(.headline).foregroundColor(themeColor)
-                    Text(WidgetMath.formatLabel(amount: liveLevel, isOunces: entry.isOunces))
-                        .font(.title3.bold().monospacedDigit())
-                }
-                Spacer()
+            switch family {
+                
+            case .accessoryCircular, .accessoryCorner:
                 Gauge(value: fillRatio) {
                     Image(systemName: iconName).foregroundColor(themeColor)
+                } currentValueLabel: {
+                    Text("\(Int(fillRatio * 100))%")
                 }
                 .gaugeStyle(.accessoryCircular)
                 .tint(themeColor)
+
+            case .accessoryRectangular:
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Hydration").font(.headline).foregroundColor(themeColor)
+                        Text(WidgetMath.formatLabel(amount: liveLevel, isOunces: entry.isOunces))
+                            .font(.title3.bold().monospacedDigit())
+                    }
+                    Spacer()
+                    Gauge(value: fillRatio) {
+                        Image(systemName: iconName).foregroundColor(themeColor)
+                    }
+                    .gaugeStyle(.accessoryCircular)
+                    .tint(themeColor)
+                }
+
+            case .accessoryInline:
+                Label("\(WidgetMath.formatLabel(amount: liveLevel, isOunces: entry.isOunces))", systemImage: iconName)
+                    .foregroundColor(themeColor)
+
+            default:
+                Image(systemName: iconName).foregroundColor(themeColor)
             }
-
-        // Inline Text (Top of watch face)
-        case .accessoryInline:
-            Label("\(WidgetMath.formatLabel(amount: liveLevel, isOunces: entry.isOunces))", systemImage: iconName)
-                .foregroundColor(themeColor)
-
-        default:
-            Image(systemName: iconName).foregroundColor(themeColor)
         }
     }
 }

@@ -6,16 +6,20 @@ import Combine
 import WidgetKit
 
 struct WatchMath {
+    static let ozMultiplier = 29.5735296 // 🌟 Fixed precision
+    
     static func currentLevel(intake: Double, lastDrink: Date, now: Date) -> Double {
+        if !Calendar.current.isDate(lastDrink, inSameDayAs: now) { return 0.0 }
+        
         let hoursPassed = max(0, now.timeIntervalSince(lastDrink)) / 3600.0
         let decay = hoursPassed * 60.0
         return max(0, intake - decay)
     }
     
     static func formatLabel(amount: Double, isOunces: Bool) -> String {
-        let displayAmount = isOunces ? (amount / 29.5735) : amount
+        let displayAmount = isOunces ? (amount / ozMultiplier) : amount
         let unit = isOunces ? "oz" : "ml"
-        return "\(Int(displayAmount)) \(unit)"
+        return "\(Int(round(displayAmount))) \(unit)" // 🌟 Fixed: Added round()
     }
 }
 

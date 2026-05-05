@@ -659,7 +659,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.20260503;
+				MARKETING_VERSION = 0.20260505;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.mjbapps.sip-dynamic-hydration";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -706,7 +706,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.20260503;
+				MARKETING_VERSION = 0.20260505;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.mjbapps.sip-dynamic-hydration";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -745,7 +745,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 0.20260503;
+				MARKETING_VERSION = 0.20260505;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.mjbapps.sip-dynamic-hydration.SipWidget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -784,7 +784,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 0.20260503;
+				MARKETING_VERSION = 0.20260505;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.mjbapps.sip-dynamic-hydration.SipWidget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -825,7 +825,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.20260503;
+				MARKETING_VERSION = 0.20260505;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.mjbapps.sip-dynamic-hydration.watchkitapp";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
@@ -865,7 +865,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.20260503;
+				MARKETING_VERSION = 0.20260505;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.mjbapps.sip-dynamic-hydration.watchkitapp";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
@@ -903,7 +903,7 @@
 					"@executable_path/../../Frameworks",
 					"@executable_path/../../../../Frameworks",
 				);
-				MARKETING_VERSION = 0.20260502;
+				MARKETING_VERSION = 0.20260505;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.mjbapps.sip-dynamic-hydration.watchkitapp.SipWatchWidget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
@@ -940,7 +940,7 @@
 					"@executable_path/../../Frameworks",
 					"@executable_path/../../../../Frameworks",
 				);
-				MARKETING_VERSION = 0.20260502;
+				MARKETING_VERSION = 0.20260505;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.mjbapps.sip-dynamic-hydration.watchkitapp.SipWatchWidget";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
