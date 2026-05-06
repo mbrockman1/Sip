@@ -177,11 +177,19 @@ class HydrationManager: NSObject, ObservableObject, WCSessionDelegate {
         }
     }
     
-    // 🌟 INSTANT WATCH RECEIVER
-    nonisolated func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
-        if let amount = message["addDrink"] as? Double {
+    nonisolated func session(_ session: WCSession, didReceiveMessage message: [String : Any], replyHandler: @escaping ([String : Any]) -> Void) {
+        // If the watch asks for the latest data, send it back immediately
+        if message["requestSync"] != nil {
             Task { @MainActor in
-                self.addDrink(amountML: amount) // Processes Watch tap instantly on Phone
+                // Refresh from HealthKit first to be 100% sure we have the latest
+                self.syncFromHealthKit()
+                
+                // Send the latest state back to the watch
+                replyHandler([
+                    "currentIntakeML": self.currentIntakeML,
+                    "lastDrinkTimestamp": self.lastDrinkTimestamp,
+                    "dailyGoalML": self.dailyGoalML
+                ])
             }
         }
     }

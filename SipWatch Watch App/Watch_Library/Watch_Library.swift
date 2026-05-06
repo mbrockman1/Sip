@@ -83,6 +83,31 @@ class WatchManager: NSObject, ObservableObject, WCSessionDelegate {
         healthStore.execute(query)
     }
     
+    func requestSyncFromPhone() {
+        guard WCSession.default.activationState == .activated else { return }
+        
+        // "Ping" the iPhone asking for the latest data
+        WCSession.default.sendMessage(["requestSync": true], replyHandler: { reply in
+            // iPhone responded with the latest data!
+            DispatchQueue.main.async {
+                if let intake = reply["currentIntakeML"] as? Double,
+                   let timestamp = reply["lastDrinkTimestamp"] as? Date,
+                   let goal = reply["dailyGoalML"] as? Double {
+                    
+                    self.currentIntakeML = intake
+                    self.lastDrinkTimestamp = timestamp
+                    self.dailyGoalML = goal
+                    
+                    UserDefaults.standard.set(intake, forKey: "currentIntakeML")
+                    UserDefaults.standard.set(timestamp, forKey: "lastDrinkTimestamp")
+                    WidgetCenter.shared.reloadAllTimelines()
+                }
+            }
+        }, errorHandler: { error in
+            print("iPhone not reachable: \(error)")
+        })
+    }
+    
     func addDrink(amountML: Double) {
         WKInterfaceDevice.current().play(.click)
         

@@ -13,9 +13,9 @@ struct SipWatchApp: App {
                 .onAppear {
                     manager.requestAuthorization()
                 }
-                .onChange(of: scenePhase) { newPhase in
+                .onChange(of: scenePhase) { _, newPhase in
                     if newPhase == .active {
-                        WidgetCenter.shared.reloadAllTimelines()
+                        manager.requestSyncFromPhone()
                         manager.fetchTodayData()
                     }
                 }
